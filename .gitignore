@@ -1,0 +1,26 @@
+# Arquivos de banco de dados
+*.db
+
+# Arquivos compilados do Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambientes virtuais (caso esteja usando)
+venv/
+env/
+.venv/
+.env/
+
+# Arquivos temporários do sistema
+.DS_Store
+Thumbs.db
+
+# Configurações do editor
+.vscode/
+*.code-workspace
+.idea/
+
+# Logs e arquivos de cache
+*.log
+*.cache
