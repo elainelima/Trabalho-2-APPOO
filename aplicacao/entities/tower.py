@@ -1,15 +1,17 @@
 import pygame
 from settings import TILE_SIZE, COLOR_TOWER
+from util.utils import grid_to_pixel, pixel_to_grid
 
 class Tower:
+    COST = 25 
     def __init__(self, grid_pos):
-        self.grid_pos = grid_pos  # posição no grid (coluna, linha)
-        self.pos = (grid_pos[0] * TILE_SIZE + TILE_SIZE // 2,
-                    grid_pos[1] * TILE_SIZE + TILE_SIZE // 2)  # centro do tile em pixels
-
+        self.grid_pos = grid_pos  # (row, col)
+        self.pos = grid_to_pixel(grid_pos)  # usa utilitário para converter
+        
         self.radius = 20
         self.range = 100
         self.fire_rate = 1  # tiros por segundo
+        self.time_since_last_shot = 1 / self.fire_rate 
         self.damage = 25
         self.time_since_last_shot = 0
 

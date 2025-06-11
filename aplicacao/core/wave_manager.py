@@ -1,5 +1,5 @@
 # wave_manager.py
-from enemy import Enemy
+from entities.enemy import Enemy
 from settings import TILE_SIZE
 
 class WaveManager:
