@@ -2,6 +2,7 @@ import pygame
 from entities.tower import TowerBase
 
 class IceTower(TowerBase):
+    COST = 60
     def __init__(self, grid_pos):
         super().__init__(grid_pos)
         self.damage = 15

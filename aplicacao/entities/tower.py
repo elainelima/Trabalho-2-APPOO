@@ -6,7 +6,6 @@ class TowerBase(ABC):
     def __init__(self, grid_pos):
         self.grid_pos = grid_pos
         self.pos = grid_to_pixel(grid_pos)
-
         self.radius = 20
         self.range = 100
         self.fire_rate = 1
