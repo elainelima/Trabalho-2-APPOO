@@ -11,6 +11,10 @@ class Enemy:
         self.pos = list(self.path[0])  # posição em pixels (x, y)
         self.radius = 15
         self.hp = 100
+        self.damage = 6
+        self.reward = 10
+        self.alive = True
+        self.rewarded = False
 
     def update(self, dt):
         if self.current_point + 1 < len(self.path):
@@ -37,6 +41,12 @@ class Enemy:
 
     def take_damage(self, amount):
         self.hp -= amount
+        if self.hp <= 0 and self.alive:
+            self.alive = False
+        # ...
+
+    def is_alive(self):
+        return self.alive
 
     def reached_end(self):
         return self.current_point >= len(self.path) - 1
