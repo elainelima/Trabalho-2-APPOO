@@ -4,9 +4,10 @@ from entities.tower  import TowerBase
 class SniperTower(TowerBase):
     def __init__(self, grid_pos):
         super().__init__(grid_pos)
-        self.damage = 80
+        self.damage = 45
         self.range = 200
-        self.fire_rate = 0.5
+        self.fire_rate = 1.2
+        self.cost = 80
 
     def draw(self, screen):
         pygame.draw.circle(screen, (200, 200, 200), self.pos, self.radius)

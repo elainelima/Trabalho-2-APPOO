@@ -7,6 +7,7 @@ class IceTower(TowerBase):
         self.damage = 15
         self.range = 100
         self.fire_rate = 0.8
+        self.cost = 60
 
     def shoot(self, enemy):
         super().shoot(enemy)

@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from util.utils import grid_to_pixel
 
 class TowerBase(ABC):
-    COST = 25
-
     def __init__(self, grid_pos):
         self.grid_pos = grid_pos
         self.pos = grid_to_pixel(grid_pos)

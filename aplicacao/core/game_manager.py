@@ -1,6 +1,6 @@
 # game_manager.py
 import pygame
-from settings import FPS
+from settings import TILE_SIZE
 from core.map import GameMapBase
 from entities.tower import TowerBase
 from entities.enemy import Enemy
@@ -29,10 +29,16 @@ class GameManager:
         self.current_wave = 1
         self.base_hp = 100
         self.tower_images = {
-            "fogo": pygame.image.load("assets/towers/fogo.png").convert_alpha(),
-            "gelo": pygame.image.load("assets/towers/gelo.png").convert_alpha(),
-            "alvo": pygame.image.load("assets/towers/alvo.png").convert_alpha()
+            "fire": pygame.image.load("assets/towers/fogo.png").convert_alpha(),
+            "ice": pygame.image.load("assets/towers/gelo.png").convert_alpha(),
+            "sniper": pygame.image.load("assets/towers/alvo.png").convert_alpha()
         }
+        self.tower_menu = TowerMenu((10, 300), self.tower_images, [
+        ("Fire", self.tower_images["fire"], 50),
+        ("Ice", self.tower_images["ice"], 60),
+        ("Sniper", self.tower_images["sniper"], 80),
+    ])
+
 
 
 
@@ -55,12 +61,20 @@ class GameManager:
 
         for enemy in self.enemies:
             enemy.update(dt)
-
+        
+        
         for e in self.enemies:
             if e.reached_end():
                 self.base_hp -= e.damage
 
+        for e in self.enemies:
+            if not e.is_alive() and not e.rewarded:
+               self.player.gold += e.reward
+               e.rewarded  =  True    
 
+        if self.tower_menu:
+            self.tower_menu.update()    
+       
         # Remove inimigos mortos ou que chegaram ao fim
         self.enemies = [e for e in self.enemies if e.is_alive() and not e.reached_end()]
        
@@ -87,8 +101,13 @@ class GameManager:
         enemies_alive = len(self.enemies)
         base_hp = self.base_hp
 
-        if self.tower_menu:
-         self.tower_menu.draw(self.screen)
+       
+        self.tower_menu.draw(self.screen)
+        if self.tower_menu.selected:
+            mouse_pos = pygame.mouse.get_pos()
+            tower_image = self.tower_images[self.tower_menu.selected.lower()]
+            preview = pygame.transform.scale(tower_image, (TILE_SIZE, TILE_SIZE))
+            self.screen.blit(preview, (mouse_pos[0] - TILE_SIZE // 2, mouse_pos[1] - TILE_SIZE // 2))
 
         self.ui.draw(self.screen, wave_number, enemies_alive, base_hp)
         self.ui.draw(self.screen, wave_number, enemies_alive, base_hp)
@@ -97,23 +116,20 @@ class GameManager:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            pos = pygame.mouse.get_pos()
-            grid_pos = pixel_to_grid(pos)
+            self.tower_menu.handle_event(event)
 
-            if self.map.is_buildable(grid_pos) and self.player.can_afford(TowerBase.COST):
-                self.tower_placer.selected_slot = grid_pos  # salva o slot selecionado
-                self.tower_menu = TowerMenu(pos, self.tower_images)  # mostra menu na posição clicada
-            elif self.tower_menu:
-                choice = self.tower_menu.handle_event(event)
-                if choice:
-                    slot = self.tower_placer.selected_slot
-                    if slot:
-                        tower = self.create_tower_by_type(choice, slot)
-                        if tower:
-                            self.towers.append(tower)
-                            self.player.gold -= tower.COST
-                            self.tower_placer.selected_slot = None
-                            self.tower_menu = None
+            if self.tower_menu.selected:
+                pos = pygame.mouse.get_pos()
+                grid_pos = pixel_to_grid(pos)
+
+                # Cria uma torre temporária para verificar custo individual
+                tower = self.create_tower_by_type(self.tower_menu.selected, grid_pos)
+
+                if tower and self.map.is_buildable(grid_pos) and self.player.can_afford(tower.cost):
+                    self.towers.append(tower)
+                    self.player.gold -= tower.cost
+                    self.tower_menu.selected = None
+
 
 
 
