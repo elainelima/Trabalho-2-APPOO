@@ -25,7 +25,7 @@ class TowerPlacer:
     def handle_click(self):
         if self.valid:  
             new_tower = TowerBase(self.mouse_tile)
-            if self.player.spend(TowerBase.COST):  # só gasta se puder
+            if self.player.spend(new_tower.cost):  # só gasta se puder
                 self.towers.append(new_tower)
 
     def draw(self, surface):
