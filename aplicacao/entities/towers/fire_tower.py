@@ -8,6 +8,7 @@ class FireTower(TowerBase):
         self.damage = 60
         self.range = 80
         self.fire_rate = 0.8
+        self.radius = 20
         self.cost = 50
 
     def draw(self, screen):
@@ -15,3 +16,6 @@ class FireTower(TowerBase):
         s = pygame.Surface((self.range * 2, self.range * 2), pygame.SRCALPHA)
         pygame.draw.circle(s, (255, 100, 0, 60), (self.range, self.range), self.range)
         screen.blit(s, (self.pos[0] - self.range, self.pos[1] - self.range))
+
+    def update(self, dt, enemies):
+        return super().update(dt, enemies)
