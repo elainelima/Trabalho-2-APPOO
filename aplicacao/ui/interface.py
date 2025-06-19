@@ -4,7 +4,7 @@ class InterfaceInicial:
     def __init__(self, screen):
         self.screen = screen
         self.font = pygame.font.SysFont(None, 48)
-        self.options = [("Fácil", "easy"), ("Médio", "medium"), ("Difícil", "hard")]
+        self.options = [("Fácil", "easy"), ("Médio", "medium"), ("Difícil", "hard"), ("Sem fim","endless")]
         self.buttons = []
         self.create_buttons()
 
