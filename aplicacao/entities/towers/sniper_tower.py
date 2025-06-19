@@ -8,6 +8,7 @@ class SniperTower(TowerBase):
         self.damage = 45
         self.range = 200
         self.fire_rate = 1.2
+        self.radius = 15
         self.cost = 80
 
     def draw(self, screen):
