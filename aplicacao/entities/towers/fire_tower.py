@@ -7,7 +7,9 @@ class FireTower(TowerBase):
         super().__init__(grid_pos, image)
         self.damage = 50
         self.range = 80
-        self.fire_rate = 1.2
+        self.fire_rate = 0.8
+        self.radius = 20
+        self.cost = 50
 
     def method(self):
         print("Torre de Fogo")

@@ -2,11 +2,19 @@ import pygame
 from entities.tower import TowerBase
 
 class IceTower(TowerBase):
+<<<<<<< HEAD
     def __init__(self, grid_pos, image):
         super().__init__(grid_pos, image)
+=======
+    COST = 60
+    def __init__(self, grid_pos):
+        super().__init__(grid_pos)
+>>>>>>> c087b3443128c469a952b6add9881c281bcd8c65
         self.damage = 15
         self.range = 100
         self.fire_rate = 0.8
+        self.radius = 10
+        self.cost = 60
 
     def shoot(self, enemy):
         super().shoot(enemy)

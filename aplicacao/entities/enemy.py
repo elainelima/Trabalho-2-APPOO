@@ -52,7 +52,8 @@ class Enemy:
         self.hp -= amount
         if self.hp <= 0 and self.alive:
             self.alive = False
-        # ...
+            
+            
 
     def is_alive(self):
         return self.alive
