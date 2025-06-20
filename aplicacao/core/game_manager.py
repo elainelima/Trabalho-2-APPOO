@@ -52,9 +52,11 @@ class GameManager:
         # Atualiza torres e inimigos
         for tower in self.towers:
             tower.update(dt, self.enemies)
-
+            tower.sprite.update()
+            
         for enemy in self.enemies:
             enemy.update(dt)
+            enemy.sprite.update()
 
         for e in self.enemies:
             if e.reached_end():
@@ -124,11 +126,11 @@ class GameManager:
     def create_tower_by_type(self, tower_type, grid_pos):
             if tower_type == "Fire":
                 from entities.towers.fire_tower import FireTower
-                return FireTower(grid_pos)
+                return FireTower(grid_pos, "assets/towers/4.png")
             elif tower_type == "Ice":
                 from entities.towers.ice_tower import IceTower
-                return IceTower(grid_pos)
+                return IceTower(grid_pos, "assets/towers/4.png")
             elif tower_type == "Sniper":
                 from entities.towers.sniper_tower import SniperTower
-                return SniperTower(grid_pos)
+                return SniperTower(grid_pos, "assets/towers/4.png")
             return None     

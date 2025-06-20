@@ -8,7 +8,7 @@ class AnimatedSprite(pygame.sprite.Sprite):
         self.images = self.separateImages(numImages)
         self.index = 0
         self.image = self.images[self.index]
-        self.rect = self.image.get_rect(topleft=par)
+        self.rect = self.image.get_rect(midbottom=par)
 
 
     def separateImages(self, numImages: int) -> list:
@@ -27,4 +27,6 @@ class AnimatedSprite(pygame.sprite.Sprite):
 
     def update(self):
         self.index = (self.index + 1) % len(self.images)
+        old_midbottom = self.rect.midbottom
         self.image = self.images[self.index]
+        self.rect = self.image.get_rect(midbottom=old_midbottom)
