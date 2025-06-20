@@ -3,20 +3,13 @@ from abc import ABC, abstractmethod
 from util.utils import grid_to_pixel
 
 class TowerBase(ABC):
-    COST = 25
-
     def __init__(self, grid_pos):
         self.grid_pos = grid_pos
         self.pos = grid_to_pixel(grid_pos)
-
-        self.radius = 20
-        self.range = 100
-        self.fire_rate = 1
         self.time_since_last_shot = 0
-        self.damage = 25
 
     def update(self, dt, enemies):
-        self.time_since_last_shot += dt
+        self.time_since_last_shot += (1 + dt)
         target = self.find_target(enemies)
         if target and self.time_since_last_shot >= 1 / self.fire_rate:
             self.shoot(target)
@@ -35,3 +28,4 @@ class TowerBase(ABC):
     @abstractmethod
     def draw(self, screen):
         pass
+

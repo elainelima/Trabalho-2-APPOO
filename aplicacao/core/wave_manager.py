@@ -3,8 +3,9 @@ from entities.enemy import Enemy
 from settings import TILE_SIZE
 
 class WaveManager:
-    def __init__(self, path):
+    def __init__(self, path,difficulty):
         self.path = path
+        self.difficulty = difficulty
         self.current_wave = 0
         self.wave_in_progress = False
         self.spawn_timer = 0
@@ -14,7 +15,7 @@ class WaveManager:
 
     def start_next_wave(self):
         self.current_wave += 1
-        self.enemies_to_spawn = 5 + self.current_wave * 2
+        self.enemies_to_spawn = 5 + self.current_wave * 3
         self.enemies_spawned = 0
         self.spawn_timer = 0
         self.wave_in_progress = True
