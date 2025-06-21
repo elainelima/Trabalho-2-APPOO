@@ -23,7 +23,7 @@ class GreenMap(GameMapBase):
     def get_path(self):
      return [(col * TILE_SIZE + TILE_SIZE // 2, row * TILE_SIZE + TILE_SIZE // 2) for row, col in self.path]
 
-    def draw_tile(self, surface, rect, row, col):
+    def draw_tile(self, surface: pygame.surface.Surface, rect: pygame.Rect, row: int, col: int):
         if self.grid[row][col] == 1:
             tileImage = "assets/tiles/FieldsTile_01.png"
         else:
