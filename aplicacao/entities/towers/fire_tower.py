@@ -10,6 +10,8 @@ class FireTower(TowerBase):
         self.fire_rate = 0.8
         self.radius = 20
         self.cost = 50
+        self.sprite = AnimatedSprite(image, self.pos, 11, 30)
+
 
     def method(self):
         print("Torre de Fogo")

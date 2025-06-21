@@ -14,7 +14,7 @@ class TowerBase(ABC):
         self.time_since_last_shot = 0
         self.damage = 25
         
-        self.sprite = AnimatedSprite(image, self.pos, 6)  # já deve posicionar pelo centro
+        self.sprite = AnimatedSprite(image, self.pos, 6, 30)  # já deve posicionar pelo centro
 
     def update(self, dt, enemies):
         self.time_since_last_shot += (1 + dt)

@@ -1,6 +1,8 @@
 # wave_manager.py
 from entities.enemy import Enemy
-from entities.enemies.bee import BeeEnemy 
+from entities.enemies.bee import BeeEnemy
+from entities.enemies.slime import SlimeEnemy 
+from entities.enemies.wolf import WolfEnemy 
 from settings import TILE_SIZE
 
 class WaveManager:
@@ -28,7 +30,9 @@ class WaveManager:
         self.spawn_timer += dt
         if self.spawn_timer >= self.spawn_delay and self.enemies_spawned < self.enemies_to_spawn:
             self.spawn_timer = 0
-            new_enemy = BeeEnemy(self.path, "assets/enemies/bee/D_Walk.png")
+            #new_enemy = BeeEnemy(self.path, "assets/enemies/bee/D_Walk.png")
+            #new_enemy = SlimeEnemy(self.path, "assets/enemies/slime/D_Walk.png")
+            new_enemy = WolfEnemy(self.path, "assets/enemies/wolf/D_Walk.png")
             enemies.append(new_enemy)
             self.enemies_spawned += 1
 

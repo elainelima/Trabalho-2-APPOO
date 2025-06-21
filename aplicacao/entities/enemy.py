@@ -42,7 +42,7 @@ class Enemy:
                 self.pos[1] += dir_norm[1] * move_dist
 
             # Atualizando posição do personagem e sua animação
-            self.sprite.rect.topleft = (self.pos[0], self.pos[1])
+            self.sprite.rect.center = (self.pos[0], self.pos[1])
             self.sprite.update()
 
     def is_alive(self):
@@ -52,8 +52,6 @@ class Enemy:
         self.hp -= amount
         if self.hp <= 0 and self.alive:
             self.alive = False
-            
-            
 
     def is_alive(self):
         return self.alive
@@ -72,4 +70,5 @@ class Enemy:
         pygame.draw.rect(transparente, (255, 100, 0, 0), transparente.get_rect(), 2)
 
         # Desenha essa superfície por cima da tela, no local do sprite
-        screen.blit(transparente, self.sprite.rect.topleft)
+        screen.blit(transparente, self.sprite.rect.center)
+
