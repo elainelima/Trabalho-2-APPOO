@@ -19,7 +19,10 @@ def draw_victory_screen(screen, width, height, font, button_font):
     screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - 100))
 
     button_rect = pygame.Rect(width // 2 - 150, height // 2, 300, 60)
+
+
     mouse_pos = pygame.mouse.get_pos()
     draw_stylized_button(screen, button_rect, "Jogar Novamente", button_font, mouse_pos)
+    draw_stylized_button(screen, button_rect, "Jo")
 
     return button_rect

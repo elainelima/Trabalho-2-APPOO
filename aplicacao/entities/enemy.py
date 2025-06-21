@@ -3,7 +3,7 @@ from settings import TILE_SIZE, COLOR_ENEMY
 from assets.drawAnimated import AnimatedSprite
 
 class Enemy:
-    def __init__(self, path, image):
+    def __init__(self, path, image, folder):
         self.path = path  # lista de posições em pixels para seguir
         self.current_point = 0
         self.speed = 100  # pixels por segundo
@@ -17,7 +17,7 @@ class Enemy:
         self.reward = 10
         self.alive = True
         self.rewarded = False
-        self.sprite = AnimatedSprite(self.image, self.pos, 6)
+        self.sprite = AnimatedSprite(self.image, self.pos, 6, folder=folder)
 
 
     def update(self, dt):
@@ -41,9 +41,15 @@ class Enemy:
                 self.pos[0] += dir_norm[0] * move_dist
                 self.pos[1] += dir_norm[1] * move_dist
 
+            if dir_vec[0] > dir_vec[1]:
+
+                self.sprite.update(True)
+
+            else:
+                self.sprite.update(False)
+
             # Atualizando posição do personagem e sua animação
             self.sprite.rect.center = (self.pos[0], self.pos[1])
-            self.sprite.update()
 
     def is_alive(self):
         return self.hp > 0

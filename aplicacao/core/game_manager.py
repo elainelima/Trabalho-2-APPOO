@@ -82,7 +82,6 @@ class GameManager:
             
         for enemy in self.enemies:
             enemy.update(dt)
-            enemy.sprite.update()
 
     def _update_enemies(self, dt):
         for enemy in self.enemies:

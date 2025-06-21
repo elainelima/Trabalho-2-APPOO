@@ -30,9 +30,9 @@ class WaveManager:
         self.spawn_timer += dt
         if self.spawn_timer >= self.spawn_delay and self.enemies_spawned < self.enemies_to_spawn:
             self.spawn_timer = 0
-            #new_enemy = BeeEnemy(self.path, "assets/enemies/bee/D_Walk.png")
-            #new_enemy = SlimeEnemy(self.path, "assets/enemies/slime/D_Walk.png")
-            new_enemy = WolfEnemy(self.path, "assets/enemies/wolf/D_Walk.png")
+            new_enemy = BeeEnemy(self.path, "assets/enemies/bee/D_Walk.png", folder="assets/enemies/bee/")
+            #new_enemy = SlimeEnemy(self.path, "assets/enemies/slime/D_Walk.png", folder="assets/enemies/slime/")
+            #new_enemy = WolfEnemy(self.path, "assets/enemies/wolf/S_Walk.png", folder="assets/enemies/wolf/")
             enemies.append(new_enemy)
             self.enemies_spawned += 1
 
