@@ -1,21 +1,17 @@
 import pygame
 from entities.tower import TowerBase
+from assets.drawAnimated import AnimatedSprite
 
 class FireTower(TowerBase):
-    COST = 50
-    def __init__(self, grid_pos):
-        super().__init__(grid_pos)
-        self.damage = 60
+    def __init__(self, grid_pos, image):
+        super().__init__(grid_pos, image)
+        self.damage = 50
         self.range = 80
         self.fire_rate = 0.8
         self.radius = 20
         self.cost = 50
+        self.sprite = AnimatedSprite(image, self.pos, 11, 30)
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, (255, 80, 0), self.pos, self.radius)
-        s = pygame.Surface((self.range * 2, self.range * 2), pygame.SRCALPHA)
-        pygame.draw.circle(s, (255, 100, 0, 60), (self.range, self.range), self.range)
-        screen.blit(s, (self.pos[0] - self.range, self.pos[1] - self.range))
 
-    def update(self, dt, enemies):
-        return super().update(dt, enemies)
+    def method(self):
+        print("Torre de Fogo")

@@ -25,11 +25,14 @@ class GreenMap(GameMapBase):
 
     def draw_tile(self, surface, rect, row, col):
         if self.grid[row][col] == 1:
-            color = GREEN  # Caminho
+            tileImage = "assets/tiles/FieldsTile_01.png"
         else:
-            color = DARK_GRAY  # Chão comum
-
-        pygame.draw.rect(surface, color, rect)
+            tileImage = "assets/tiles/FieldsTile_38.png"
+        
+        # Gera imagem de cada quadrado do caminho ou do restante do
+        image = pygame.image.load(tileImage).convert_alpha()
+        image_amplified = pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+        surface.blit(image_amplified, rect.topleft)
 
         if (row, col) in self.build_slots:
             pygame.draw.rect(surface, (0, 100, 200), rect, 2)  # Slots de construção em azul escuro

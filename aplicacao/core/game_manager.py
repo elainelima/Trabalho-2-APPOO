@@ -77,7 +77,11 @@ class GameManager:
         self.wave_manager.update(dt, self.enemies)
 
         for tower in self.towers:
-            tower.update(dt, self.enemies)            
+            tower.update(dt, self.enemies)
+            tower.sprite.update()
+            
+        for enemy in self.enemies:
+            enemy.update(dt)
 
     def _update_enemies(self, dt):
         for enemy in self.enemies:
@@ -136,7 +140,7 @@ class GameManager:
         if tower_class and self.map.is_buildable(grid_pos):
             cost = tower_class.COST
             if self.player.can_afford(cost):
-                tower = tower_class(grid_pos)
+                tower = self.create_tower_by_type(tower_type, grid_pos)
                 self.towers.append(tower)
                 self.player.gold -= cost
                 self.tower_menu.selected = None
@@ -148,10 +152,13 @@ class GameManager:
         surface.blit(text, (10, 100))
 
     def create_tower_by_type(self, tower_type, grid_pos):
-        tower_map = {
-            "Fire": FireTower,
-            "Ice": IceTower,
-            "Sniper": SniperTower
-        }
-        tower_class = tower_map.get(tower_type)
-        return tower_class(grid_pos) if tower_class else None
+            if tower_type == "Fire":
+                from entities.towers.fire_tower import FireTower
+                return FireTower(grid_pos, "assets/towers/redMoon.png")
+            elif tower_type == "Ice":
+                from entities.towers.ice_tower import IceTower
+                return IceTower(grid_pos, "assets/towers/Obelisk.png")
+            elif tower_type == "Sniper":
+                from entities.towers.sniper_tower import SniperTower
+                return SniperTower(grid_pos, "assets/towers/4.png")
+            return None     
