@@ -6,7 +6,12 @@ from maps.green_map import GreenMap
 from ui.game_over_screen import draw_game_over_screen
 from ui.victory_screen import draw_victory_screen
 from ui.pause_menu import draw_pause_menu
+from ui.ranking_screen import draw_ranking_screen
+from pygame import mixer
 
+def carregar_rankings():
+
+    return [("Jogador1", 1500), ("Jogador2", 1200), ("Jogador3", 1100)]
 
 def main():
     pygame.init()
@@ -27,10 +32,16 @@ def main():
         pygame.quit()
         return
 
+    mixer.music.load('assets/sounds/watery-graves-181198.mp3')
+    mixer.music.play(-1)
+
     game_map = GreenMap()
     game = GameManager(screen, difficulty, game_map)
     game_over = False
     running = True
+
+    ranking_screen = False
+    rankings = carregar_rankings()
 
     while running:
         dt = game.clock.tick(60) / 1000
@@ -41,7 +52,10 @@ def main():
                 running = False
                 return
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
+                if ranking_screen:
+                    ranking_screen = False
+                else:
+                    paused = not paused
 
             if paused:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -50,8 +64,24 @@ def main():
                         paused = False
                     elif pause_buttons["sair"].collidepoint(mouse_pos):
                         running = False   # Sai do loop do jogo e volta ao menu
-            elif not game_over and not victory:
+            elif victory and not ranking_screen:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if victory_buttons["jogar_novamente"].collidepoint(mouse_pos):
+                        # Reinicia o jogo
+                        game = GameManager(screen, difficulty, game_map)
+                        game_over = False
+                        victory = False
+                    elif victory_buttons["ranking"].collidepoint(mouse_pos):
+                        ranking_screen = True
+            elif ranking_screen:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if ranking_buttons["voltar"].collidepoint(mouse_pos):
+                        ranking_screen = False
+            elif not game_over and not victory and not paused:
                 game.handle_event(event)
+
 
 
         if not game_over and not victory and not paused:
@@ -67,10 +97,10 @@ def main():
             pause_buttons = draw_pause_menu(screen, WIDTH, HEIGHT, font, button_font)
         elif game_over:
             button_rect = draw_game_over_screen(screen, WIDTH, HEIGHT, font, button_font)
-        elif victory:
-            button_rect = draw_victory_screen(screen, WIDTH, HEIGHT, font, button_font)
-
-
+        elif victory and not ranking_screen:
+            victory_buttons = draw_victory_screen(screen, WIDTH, HEIGHT, font, button_font)
+        elif ranking_screen:
+            ranking_buttons = draw_ranking_screen(screen, WIDTH, HEIGHT, font, button_font, rankings)
         pygame.display.flip()
 
     pygame.quit()
