@@ -3,7 +3,7 @@ from entities.tower import TowerBase
 from assets.drawAnimated import AnimatedSprite
 
 class FireTower(TowerBase):
-    def __init__(self, grid_pos, image):
+    def __init__(self, grid_pos: tuple[int], image: str):
         super().__init__(grid_pos, image)
         self.damage = 50
         self.range = 80

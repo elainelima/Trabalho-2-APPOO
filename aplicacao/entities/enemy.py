@@ -3,7 +3,7 @@ from settings import TILE_SIZE, COLOR_ENEMY
 from assets.drawAnimated import AnimatedSprite
 
 class Enemy:
-    def __init__(self, path, image, folder):
+    def __init__(self, path: list[tuple], image: str, folder: str):
         self.path = path  # lista de posições em pixels para seguir
         self.current_point = 0
         self.speed = 100  # pixels por segundo

@@ -4,7 +4,7 @@ from assets.drawAnimated import AnimatedSprite
 
 class SniperTower(TowerBase):
     COST = 80
-    def __init__(self, grid_pos, image):
+    def __init__(self, grid_pos: tuple[int], image: str):
         super().__init__(grid_pos, image)
         self.damage = 45
         self.range = 200

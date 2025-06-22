@@ -10,9 +10,10 @@ from util.utils import pixel_to_grid
 from entities.towers.fire_tower import FireTower
 from entities.towers.ice_tower import IceTower
 from entities.towers.sniper_tower import SniperTower
+from core.map import GameMapBase
 
 class GameManager:
-    def __init__(self, screen, difficulty, map_class):
+    def __init__(self, screen: pygame.Surface, difficulty: str, map_class: GameMapBase):
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.difficulty = difficulty
@@ -53,7 +54,7 @@ class GameManager:
             ("Sniper", self.tower_images["sniper"], SniperTower.COST),
         ])
 
-    def update(self, dt):
+    def update(self, dt: int):
         if self.game_won:
             return
 
@@ -69,7 +70,7 @@ class GameManager:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.tower_placer.handle_click()
 
-    def _update_components(self, dt):
+    def _update_components(self, dt: int):
         self.map.update()
         self.tower_placer.update()
         self.message_manager.update(dt)
@@ -83,7 +84,7 @@ class GameManager:
         for enemy in self.enemies:
             enemy.update(dt)
 
-    def _update_enemies(self, dt):
+    def _update_enemies(self, dt: int):
         for enemy in self.enemies:
             enemy.update(dt)
             if enemy.reached_end():
@@ -126,13 +127,13 @@ class GameManager:
         self.ui.draw(self.screen, self.wave_manager.current_wave, len(self.enemies), self.base_hp)
         self.draw_gold(self.screen, self.player, pygame.font.SysFont(None, 30))
 
-    def handle_event(self, event):
+    def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self.tower_menu.handle_event(event)
             if self.tower_menu.selected:
                 self.try_build_tower(self.tower_menu.selected)
 
-    def try_build_tower(self, tower_type):
+    def try_build_tower(self, tower_type: str):
         pos = pygame.mouse.get_pos()
         grid_pos = pixel_to_grid(pos)
         tower_class = self.TOWER_TYPES.get(tower_type)
@@ -147,11 +148,11 @@ class GameManager:
             else:
                 self.message_manager.show("Ouro insuficiente para construir essa torre!")
 
-    def draw_gold(self, surface, player, font):
+    def draw_gold(self, surface: pygame.surface.Surface, player: Player, font):
         text = font.render(f"Ouro: {player.gold}", True, (255, 255, 0))
         surface.blit(text, (10, 100))
 
-    def create_tower_by_type(self, tower_type, grid_pos):
+    def create_tower_by_type(self, tower_type: str, grid_pos: tuple[int]):
             if tower_type == "Fire":
                 from entities.towers.fire_tower import FireTower
                 return FireTower(grid_pos, "assets/towers/redMoon.png")
