@@ -13,7 +13,7 @@ from entities.towers.sniper_tower import SniperTower
 from core.map import GameMapBase
 
 class GameManager:
-    def __init__(self, screen: pygame.surface, difficulty, map_class: GameMapBase):
+    def __init__(self, screen: pygame.Surface, difficulty: str, map_class: GameMapBase):
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.difficulty = difficulty

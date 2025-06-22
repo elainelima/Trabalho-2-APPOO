@@ -2,22 +2,22 @@
 import pygame
 
 class MessageManager:
-    def __init__(self, duration=2.5):
+    def __init__(self, duration: int =2.5):
         self.message = ""
         self.duration = duration
         self.timer = 0
 
-    def show(self, message):
+    def show(self, message: str):
         self.message = message
         self.timer = self.duration
 
-    def update(self, dt):
+    def update(self, dt: int):
         if self.timer > 0:
             self.timer -= dt
             if self.timer <= 0:
                 self.message = ""
 
-    def draw(self, surface):
+    def draw(self, surface: pygame.Surface):
         if self.message and self.timer > 0:
             font = pygame.font.SysFont(None, 30)
             alpha = int(255 * (self.timer / self.duration))
