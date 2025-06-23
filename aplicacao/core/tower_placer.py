@@ -2,7 +2,7 @@ import pygame
 from settings import TILE_SIZE, GREEN, RED, MAP_ROWS, MAP_COLS
 from entities.tower import TowerBase
 from util.utils import grid_to_pixel,pixel_to_grid
-from map import GameMapBase
+from core.map import GameMapBase
 from entities.player import Player
 
 class TowerPlacer:

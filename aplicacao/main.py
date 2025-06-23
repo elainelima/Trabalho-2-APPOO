@@ -18,17 +18,19 @@ def main():
     button_font = pygame.font.SysFont(None, 36)
 
     interface = InterfaceInicial(screen)
-    difficulty = interface.run()
     victory = False
     paused = False
     pause_buttons = None
 
+    difficulty, nick = interface.run()
     if difficulty is None:
         pygame.quit()
         return
-
+    
     game_map = GreenMap()
     game = GameManager(screen, difficulty, game_map)
+    game.player_nick = nick
+
     game_over = False
     running = True
 

@@ -15,6 +15,7 @@ from core.map import GameMapBase
 class GameManager:
     def __init__(self, screen: pygame.Surface, difficulty: str, map_class: GameMapBase):
         self.screen = screen
+        self.score = 0
         self.clock = pygame.time.Clock()
         self.difficulty = difficulty
         self.map = map_class
@@ -79,7 +80,7 @@ class GameManager:
 
         for tower in self.towers:
             tower.update(dt, self.enemies)
-            tower.sprite.update()
+            tower.sprite.update(dt)
             
         for enemy in self.enemies:
             enemy.update(dt)
@@ -91,19 +92,26 @@ class GameManager:
                 self.base_hp -= enemy.damage
             elif not enemy.is_alive() and not enemy.rewarded:
                 self.player.gold += enemy.reward
-                enemy.rewarded = True        
+                enemy.rewarded = True
+                if self.difficulty == "endless":
+                    self.score += 1     
 
     def _remove_defeated_enemies(self):
       self.enemies = [e for e in self.enemies if e.is_alive() and not e.reached_end()]   
 
     def _progress_waves(self):
+        wave_over = self.wave_manager.is_wave_over(self.enemies)
+
         if self.difficulty == "endless":
-            self.wave_manager.start_next_wave(auto=True)
-        elif not self.wave_manager.is_in_progress() and not self.enemies:
-            if self.wave_manager.current_wave >= self.max_waves:
-                self.game_won = True
-            else:
-                self.wave_manager.start_next_wave()           
+            if wave_over and not self.wave_manager.is_in_progress():
+                self.wave_manager.start_next_wave()
+        else:
+            if wave_over:
+                if self.wave_manager.current_wave >= self.max_waves:
+                    self.game_won = True
+                else:
+                    self.wave_manager.start_next_wave()
+    
 
     def draw(self):
         self.map.draw(self.screen)
@@ -126,6 +134,7 @@ class GameManager:
 
         self.ui.draw(self.screen, self.wave_manager.current_wave, len(self.enemies), self.base_hp)
         self.draw_gold(self.screen, self.player, pygame.font.SysFont(None, 30))
+        self.draw_score(self.screen, pygame.font.SysFont(None, 30))
 
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -163,3 +172,7 @@ class GameManager:
                 from entities.towers.sniper_tower import SniperTower
                 return SniperTower(grid_pos, "assets/towers/4.png")
             return None     
+    
+    def draw_score(self, surface, font):
+        text = font.render(f"Score: {self.score}", True, (255, 255, 255))
+        surface.blit(text, (10, 130))
