@@ -4,8 +4,8 @@ from entities.player import Player
 from core.tower_placer import TowerPlacer
 from core.wave_manager import WaveManager
 from ui.hud import HUD
-from ui.message_manager import MessageManager
-from ui.tower_menu import TowerMenu
+from ui.components.message_manager import MessageManager
+from ui.components.tower_menu import TowerMenu
 from util.utils import pixel_to_grid
 from entities.towers.fire_tower import FireTower
 from entities.towers.ice_tower import IceTower

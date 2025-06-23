@@ -10,15 +10,12 @@ class TowerBase(ABC):
 
     def __init__(self, grid_pos: int, image: str):
         self.grid_pos = grid_pos
-        
         self.pos = grid_to_pixel(grid_pos)
         self.time_since_last_shot = 0
-        self.damage = 25
-        
         self.sprite = AnimatedSprite(image, self.pos, 6, 30)  # já deve posicionar pelo centro
 
     def update(self, dt: int, enemies: list[Enemy]):
-        self.time_since_last_shot += (1 + dt)
+        self.time_since_last_shot += dt
         target = self.find_target(enemies)
         if target and self.time_since_last_shot >= 1 / self.fire_rate:
             self.shoot(target)

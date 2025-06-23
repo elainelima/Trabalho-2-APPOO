@@ -7,7 +7,7 @@ class FireTower(TowerBase):
         super().__init__(grid_pos, image)
         self.damage = 50
         self.range = 80
-        self.fire_rate = 0.8
+        self.fire_rate = 0.2
         self.radius = 20
         self.cost = 50
         self.sprite = AnimatedSprite(image, self.pos, 11, 30)

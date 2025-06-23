@@ -4,7 +4,7 @@ class NickInput:
     def __init__(self, rect, font, placeholder="Digite seu nome"):
         self.rect = pygame.Rect(rect)
         self.color_inactive = pygame.Color("gray")
-        self.color_active = pygame.Color("dodgerblue2")
+        self.color_active = pygame.Color("white")
         self.color = self.color_inactive
         self.font = font
         self.text = ""
@@ -29,7 +29,7 @@ class NickInput:
     def draw(self, surface):
         # Exibe texto digitado ou placeholder
         display_text = self.text if self.text else self.placeholder
-        text_surface = self.font.render(display_text, True, (0, 0, 0) if self.text else (150, 150, 150))
+        text_surface = self.font.render(display_text, True, (100, 100, 100) if self.text else (150, 150, 150))
         pygame.draw.rect(surface, self.color, self.rect, 2)
         surface.blit(text_surface, (self.rect.x + 5, self.rect.y + 5))
 

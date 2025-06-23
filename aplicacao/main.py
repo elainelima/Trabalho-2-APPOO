@@ -3,12 +3,20 @@ import pygame
 from ui.interface import InterfaceInicial
 from core.game_manager import GameManager
 from maps.green_map import GreenMap
-from ui.game_over_screen import draw_game_over_screen
-from ui.victory_screen import draw_victory_screen
-from ui.pause_menu import draw_pause_menu
+from ui.screens.game_over_screen import draw_game_over_screen
+from ui.screens.victory_screen import draw_victory_screen
+from ui.components.pause_menu import draw_pause_menu
+from util.ranking_service import RankService
+from ui.screens.ranking_screen import draw_ranking_screen
 
 
-def main():
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from base_de_dados.base_dados import Base_Dados
+
+
+def main(ranking: RankService):
     pygame.init()
     WIDTH, HEIGHT = 960, 720
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -37,7 +45,6 @@ def main():
     while running:
         dt = game.clock.tick(60) / 1000
 
-        #Loop Eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -51,15 +58,16 @@ def main():
                     if pause_buttons["continuar"].collidepoint(mouse_pos):
                         paused = False
                     elif pause_buttons["sair"].collidepoint(mouse_pos):
-                        running = False   # Sai do loop do jogo e volta ao menu
+                        running = False
             elif not game_over and not victory:
                 game.handle_event(event)
-
 
         if not game_over and not victory and not paused:
             game.update(dt)
             if game.base_hp <= 0:
                 game_over = True
+                if difficulty == "endless":
+                    ranking.cadastra_pontuacao(game.player_nick, game.score)
             elif game.game_won:
                 victory = True
 
@@ -68,14 +76,28 @@ def main():
         if paused:
             pause_buttons = draw_pause_menu(screen, WIDTH, HEIGHT, font, button_font)
         elif game_over:
-            button_rect = draw_game_over_screen(screen, WIDTH, HEIGHT, font, button_font)
+            ranking_buttons = draw_ranking_screen(screen, WIDTH, HEIGHT, font, button_font, ranking)
+            if pygame.mouse.get_pressed()[0]:  # Botão esquerdo clicado
+                mouse_pos = pygame.mouse.get_pos()
+                if ranking_buttons["menu"].collidepoint(mouse_pos):
+                    main()  # ou chame o menu inicial novamente
+                    return
+                elif ranking_buttons["retry"].collidepoint(mouse_pos):
+                    game = GameManager(screen, difficulty, GreenMap())  # reinicia o jogo
+                    game.player_nick = nick
+                    game_over = False
+
         elif victory:
             button_rect = draw_victory_screen(screen, WIDTH, HEIGHT, font, button_font)
-
 
         pygame.display.flip()
 
     pygame.quit()
 
 if __name__ == "__main__":
-    main()
+    db = Base_Dados()
+    db.connect()
+    db.execute_script()
+    ranking = RankService(db)
+    main(ranking)
+    db.close()

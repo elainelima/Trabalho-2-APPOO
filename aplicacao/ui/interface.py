@@ -1,7 +1,7 @@
 import pygame
 
-from ui.nick_screen import NickScreen
-from ui.difficulty_screen import DifficultyScreen
+from ui.screens.nick_screen import NickScreen
+from ui.screens.difficulty_screen import DifficultyScreen
 
 class InterfaceInicial:
     def __init__(self, screen):

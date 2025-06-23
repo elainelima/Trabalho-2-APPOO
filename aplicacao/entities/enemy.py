@@ -55,7 +55,9 @@ class Enemy:
         return self.hp > 0
 
     def take_damage(self, amount):
+        print("Hp do inimigo :", self.hp)
         self.hp -= amount
+        print("Hp do inimigo pos tiro :", self.hp)
         if self.hp <= 0 and self.alive:
             self.alive = False
 

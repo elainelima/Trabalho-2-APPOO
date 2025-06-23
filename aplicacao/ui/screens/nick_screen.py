@@ -1,5 +1,5 @@
 import pygame
-from ui.nick_input import NickInput
+from ui.components.nick_input import NickInput
 
 
 class NickScreen:
@@ -21,7 +21,7 @@ class NickScreen:
                     return nick if nick else "Jogador"
 
             self.screen.fill((20, 20, 20))
-            title = self.font.render("Digite seu nome", True, (255, 255, 255))
+            title = self.font.render("Digite seu nome", True, (180, 200, 200))
             self.screen.blit(title, (self.screen.get_width() // 2 - title.get_width() // 2, 150))
             self.nick_input.draw(self.screen)
             pygame.display.flip()
