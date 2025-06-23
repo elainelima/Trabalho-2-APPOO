@@ -10,19 +10,20 @@ def draw_stylized_button(surface, rect, text, font, mouse_pos, is_hovered_color=
     surface.blit(text_surface, text_rect)
 
 def draw_victory_screen(screen, width, height, font, button_font):
-    overlay = pygame.Surface((width, height))
-    overlay.set_alpha(180)
-    overlay.fill((255, 255, 255))
-    screen.blit(overlay, (0, 0))
+    screen.fill((34, 139, 34))
+    title = font.render("Vitória!", True, (255, 255, 255))
+    screen.blit(title, (width // 2 - title.get_width() // 2, 120))
 
-    text = font.render("Vitória!", True, (0, 180, 0))
-    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - 100))
+    # Botão Jogar Novamente
+    again_rect = pygame.Rect(width // 2 - 120, height // 2, 240, 60)
+    pygame.draw.rect(screen, (50, 205, 50), again_rect)
+    again_text = button_font.render("Jogar Novamente", True, (255, 255, 255))
+    screen.blit(again_text, (again_rect.x + 20, again_rect.y + 15))
 
-    button_rect = pygame.Rect(width // 2 - 150, height // 2, 300, 60)
+    # Botão Ranking
+    ranking_rect = pygame.Rect(width // 2 - 120, height // 2 + 80, 240, 60)
+    pygame.draw.rect(screen, (70, 130, 180), ranking_rect)
+    ranking_text = button_font.render("Ranking", True, (255, 255, 255))
+    screen.blit(ranking_text, (ranking_rect.x + 65, ranking_rect.y + 15))
 
-
-    mouse_pos = pygame.mouse.get_pos()
-    draw_stylized_button(screen, button_rect, "Jogar Novamente", button_font, mouse_pos)
-    draw_stylized_button(screen, button_rect, "Jo")
-
-    return button_rect
+    return {"jogar_novamente": again_rect, "ranking": ranking_rect}

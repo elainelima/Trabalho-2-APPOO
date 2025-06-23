@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from util.utils import grid_to_pixel
 from assets.drawAnimated import AnimatedSprite
 from settings import TILE_SIZE
-from enemy import Enemy
+from entities.enemy import Enemy
 
 class TowerBase(ABC):
     COST = 25
