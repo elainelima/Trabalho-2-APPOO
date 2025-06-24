@@ -156,15 +156,13 @@ class GameManager:
         )
 
     def handle_event(self, event: pygame.event.Event):
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            
-                if self.ui.pause_button_rect.collidepoint(event.pos):
-                    return "pause"
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.ui.pause_button_rect.collidepoint(event.pos):
+                return "pause"  # Sinaliza pausa ao loop principal
+            self.tower_menu.handle_event(event)
+            if self.tower_menu.selected:
+                self.try_build_tower(self.tower_menu.selected)
 
-                self.tower_menu.handle_event(event)
-                if self.tower_menu.selected:
-                    self.try_build_tower(self.tower_menu.selected)
-            return None
 
     def try_build_tower(self, tower_type: str):
         pos = pygame.mouse.get_pos()

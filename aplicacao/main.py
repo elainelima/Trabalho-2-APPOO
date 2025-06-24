@@ -10,6 +10,7 @@ from util.ranking_service import RankService
 from ui.screens.ranking_screen import draw_ranking_screen
 from ui.screens.map_selection_screen import MapSelectionScreen
 from ui.screens.inicial_screen import StartScreen
+from ui.screens.game_screen import GameScreen
 
 from pygame import mixer
 
@@ -32,92 +33,39 @@ def main(ranking: RankService):
     font = pygame.font.SysFont(None, 72)
     button_font = pygame.font.SysFont(None, 36)
 
-    # Tela inicial
-    start_screen = StartScreen(screen, font)
-    start_screen.run()
+    state = "start"
+    difficulty = None
+    nick = None
+    selected_map_class = None
 
+    while True:
+        if state == "start":
+            start_screen = StartScreen(screen, font)
+            start_screen.run()
+            state = "nick_difficulty"
 
-    # Tela de nickname + dificuldade
-    interface = InterfaceInicial(screen)
-    difficulty, nick = interface.run()
-    if difficulty is None:
-        pygame.quit()
-        return
+        elif state == "nick_difficulty":
+            interface = InterfaceInicial(screen)
+            difficulty, nick = interface.run()
+            if difficulty is None:
+                break
+            state = "map_select"
 
-    # Tela de seleção de mapa
-    
-    map_selector = MapSelectionScreen(screen, button_font)
-    SelectedMapClass = map_selector.run()
-    game_map = SelectedMapClass()  
-    game = GameManager(screen, difficulty, game_map)
+        elif state == "map_select":
+            map_selector = MapSelectionScreen(screen, button_font)
+            selected_map_class = map_selector.run()
+            state = "game"
 
-
-    mixer.music.load('assets/sounds/watery-graves-181198.mp3')
-    mixer.music.play(-1)
-    game.player_nick = nick
-
-    game_over = False
-    victory = False
-    paused = False
-    pause_buttons = None
-    ranking_screen = False
-    rankings = carregar_rankings()
-
-    running = True
-    while running:
-        dt = game.clock.tick(60) / 1000
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                return
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                if ranking_screen:
-                    ranking_screen = False
-                else:
-                    paused = not paused
-
-            if paused:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if pause_buttons["continuar"].collidepoint(mouse_pos):
-                        paused = False
-                    elif pause_buttons["sair"].collidepoint(mouse_pos):
-                        running = False
-            elif not game_over and not victory:
-                game.handle_event(event)
-
-        if not game_over and not victory and not paused:
-            game.update(dt)
-            if game.base_hp <= 0:
-                game_over = True
-                if difficulty == "endless":
-                    ranking.cadastra_pontuacao(game.player_nick, game.score)
-            elif game.game_won:
-                victory = True
-
-        game.draw()
-
-        if paused:
-            pause_buttons = draw_pause_menu(screen, WIDTH, HEIGHT, font, button_font)
-        elif game_over:
-            ranking_buttons = draw_ranking_screen(screen, WIDTH, HEIGHT, font, button_font, ranking)
-            if pygame.mouse.get_pressed()[0]:
-                mouse_pos = pygame.mouse.get_pos()
-                if ranking_buttons["menu"].collidepoint(mouse_pos):
-                    main(ranking)
-                    return
-                elif ranking_buttons["retry"].collidepoint(mouse_pos):
-                    game = GameManager(screen, difficulty, GreenMap())
-                    game.player_nick = nick
-                    game_over = False
-
-        elif victory:
-            button_rect = draw_victory_screen(screen, WIDTH, HEIGHT, font, button_font)
-
-        pygame.display.flip()
+        elif state == "game":
+            game_screen = GameScreen(screen, difficulty, nick, ranking, selected_map_class)
+            next_state = game_screen.run()
+            if next_state == "exit":
+                break
+            else:
+                state = next_state  # pode voltar para "difficulty" se sair no pause, etc
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     db = Base_Dados()

@@ -20,6 +20,8 @@ class NickScreen:
 
     def run(self):
         running = True
+        show_error = False
+
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -29,12 +31,18 @@ class NickScreen:
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                     nick = self.nick_input.get_text().strip()
-                    return nick if nick else "Jogador"
+                    if nick:
+                        return nick
+                    else:
+                        show_error = True
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_rect.collidepoint(event.pos):
                         nick = self.nick_input.get_text().strip()
-                        return nick if nick else "Jogador"
+                        if nick:
+                            return nick
+                        else:
+                            show_error = True
 
             self.screen.blit(self.bg_image, (0, 0))
 
@@ -53,4 +61,13 @@ class NickScreen:
                 self.button_rect.centery - button_text.get_height() // 2
             ))
 
+            # Mensagem de erro
+            if show_error:
+                error_text = self.input_font.render("Digite um nome válido.", True, (255, 60, 60))
+                self.screen.blit(error_text, (
+                    self.screen.get_width() // 2 - error_text.get_width() // 2,
+                    self.button_rect.y + 70
+                ))
+
             pygame.display.flip()
+

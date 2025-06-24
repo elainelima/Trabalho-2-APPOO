@@ -8,6 +8,7 @@ class MapSelectionScreen:
         self.clock = pygame.time.Clock()
         self.background = pygame.image.load(background_path).convert()
         self.background = pygame.transform.scale(self.background, self.screen.get_size())
+        self.selected_map_class = None
 
         self.maps = [
             {"name": "Mapa 1", "image": "assets/GreenMap.png", "class": GreenMap},

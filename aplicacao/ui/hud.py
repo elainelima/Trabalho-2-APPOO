@@ -9,6 +9,9 @@ class HUD:
         # Carregar ícones
         self.heart_icon = pygame.image.load("assets/icons/heart.png").convert_alpha()
         self.coin_icon = pygame.image.load("assets/icons/coin.png").convert_alpha()
+        self.pause_icon = pygame.image.load("assets/icons/pause.png").convert_alpha()
+        self.pause_icon = pygame.transform.scale(self.pause_icon, (24, 24))
+        self.pause_button_rect = pygame.Rect(900, 10, 30, 30)  # Ajustado ao tamanho do ícone
 
         # Redimensionar ícones para caber na barra
         self.heart_icon = pygame.transform.scale(self.heart_icon, (24, 24))
@@ -20,10 +23,11 @@ class HUD:
         # Barra de fundo
         pygame.draw.rect(surface, (0, 0, 0, 150), pygame.Rect(0, 0, surface.get_width(), 50))  
         pygame.draw.rect(surface, (30, 30, 30), pygame.Rect(0, 0, surface.get_width(), 50))
-        pygame.draw.rect(surface, (100, 100, 100), self.pause_button_rect)  
-        font = pygame.font.SysFont(None, 24)
-        text = font.render("Pause", True, (255, 255, 255))
-        surface.blit(text, (self.pause_button_rect.x + 5, self.pause_button_rect.y + 5))
+        pygame.draw.rect(surface, (60, 60, 60), self.pause_button_rect, border_radius=6)
+        surface.blit(self.pause_icon, (
+            self.pause_button_rect.x + (self.pause_button_rect.width - self.pause_icon.get_width()) // 2,
+            self.pause_button_rect.y + (self.pause_button_rect.height - self.pause_icon.get_height()) // 2
+        ))
 
         def render_info(label, value, icon=None, icon_color=None, text_color=(255, 255, 255), x_offset=0):
             if icon:
