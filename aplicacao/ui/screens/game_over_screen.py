@@ -15,10 +15,16 @@ def draw_game_over_screen(screen, width, height, font, button_font):
     screen.blit(overlay, (0, 0))
 
     text = font.render("Game Over", True, (255, 0, 0))
-    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - 100))
+    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - 150))
 
-    button_rect = pygame.Rect(width // 2 - 150, height // 2, 300, 60)
     mouse_pos = pygame.mouse.get_pos()
-    draw_stylized_button(screen, button_rect, "Jogar Novamente", button_font, mouse_pos)
 
-    return button_rect
+    # Botão Jogar Novamente
+    retry_rect = pygame.Rect(width // 2 - 150, height // 2 - 30, 300, 60)
+    draw_stylized_button(screen, retry_rect, "Jogar Novamente", button_font, mouse_pos)
+
+    # Botão Voltar ao Menu
+    menu_rect = pygame.Rect(width // 2 - 150, height // 2 + 50, 300, 60)
+    draw_stylized_button(screen, menu_rect, "Voltar ao Menu", button_font, mouse_pos)
+
+    return {"retry": retry_rect, "menu": menu_rect}
