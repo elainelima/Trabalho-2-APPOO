@@ -1,6 +1,7 @@
 import pygame
 from entities.tower import TowerBase
 from assets.drawAnimated import AnimatedSprite
+from assets.effects.fire_projectile import FireProjectile
 
 class FireTower(TowerBase):
     def __init__(self, grid_pos: tuple[int], image: str):
@@ -15,3 +16,7 @@ class FireTower(TowerBase):
 
     def method(self):
         print("Torre de Fogo")
+
+    def shoot(self, enemy):    
+        enemy.take_damage(self.damage)
+        return FireProjectile(self.pos, enemy.pos)    

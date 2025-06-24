@@ -14,14 +14,17 @@ class TowerBase(ABC):
         self.time_since_last_shot = 0
         self.sprite = AnimatedSprite(image, self.pos, 6, 30)  # já deve posicionar pelo centro
 
-    def update(self, dt: int, enemies: list[Enemy]):
+    def update(self, dt: float, enemies: list[Enemy]):
         self.time_since_last_shot += dt
         target = self.find_target(enemies)
+        projectile = None
+
         if target and self.time_since_last_shot >= 1 / self.fire_rate:
-            self.shoot(target)
+            projectile = self.shoot(target)
             self.time_since_last_shot = 0
 
         self.sprite.update(dt)
+        return projectile
 
     def find_target(self, enemies: list[Enemy]):
         for enemy in enemies:
@@ -29,9 +32,10 @@ class TowerBase(ABC):
             if dist <= self.range and enemy.is_alive():
                 return enemy
         return None
-
+    
+    @abstractmethod
     def shoot(self, enemy: Enemy):
-        enemy.take_damage(self.damage)
+        pass
 
     def draw(self, screen: pygame.surface.Surface):
         # Desenha o sprite animado centralizado

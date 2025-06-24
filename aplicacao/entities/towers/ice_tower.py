@@ -2,6 +2,7 @@ import pygame
 from entities.tower import TowerBase
 from assets.drawAnimated import AnimatedSprite
 from entities.enemy import Enemy
+from assets.effects.ice_projectile import IceProjectile
 
 class IceTower(TowerBase):
     def __init__(self, grid_pos: tuple[int], image: int):
@@ -13,9 +14,9 @@ class IceTower(TowerBase):
         self.cost = 60
         self.sprite = AnimatedSprite(image, self.pos, 14, 30)
 
-    def shoot(self, enemy: Enemy):
-        super().shoot(enemy)
-        # enemy.slow(0.5, duration=2.0)  # Supondo que o inimigo tem método slow()
+    def shoot(self, enemy: Enemy): 
+        enemy.take_damage(self.damage)
+        return IceProjectile(self.pos, enemy.pos)    
 
     def method(self):
         print("Torre de Gelo")

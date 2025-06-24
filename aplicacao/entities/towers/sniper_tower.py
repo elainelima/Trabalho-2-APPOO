@@ -1,6 +1,7 @@
 import pygame
 from entities.tower  import TowerBase
 from assets.drawAnimated import AnimatedSprite
+from assets.effects.sniper_projectile import SniperProjectile
 
 class SniperTower(TowerBase):
     COST = 80
@@ -14,4 +15,8 @@ class SniperTower(TowerBase):
 
     def method(self):
         print("Torre Sniper")
+
+    def shoot(self, enemy):    
+        enemy.take_damage(self.damage)
+        return SniperProjectile(self.pos, enemy.pos)    
 

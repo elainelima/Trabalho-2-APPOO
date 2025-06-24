@@ -22,6 +22,7 @@ class GameManager:
 
         self.towers = []
         self.enemies = []
+        self.projectiles = []
         self.player = Player()
         self.game_won = False
         self.base_hp = 100
@@ -61,6 +62,7 @@ class GameManager:
 
         self._handle_input()
         self._update_components(dt)
+        self._update_projectiles(dt)
         self._update_enemies(dt)
         self._remove_defeated_enemies()
         self._progress_waves()
@@ -80,7 +82,10 @@ class GameManager:
 
         for tower in self.towers:
             tower.update(dt, self.enemies)
+            projectile = tower.update(dt, self.enemies)
             tower.sprite.update(dt)
+            if projectile:
+                self.projectiles.append(projectile)
             
         for enemy in self.enemies:
             enemy.update(dt)
@@ -112,6 +117,12 @@ class GameManager:
                 else:
                     self.wave_manager.start_next_wave()
     
+    def _update_projectiles(self, dt: float):
+        for proj in self.projectiles:
+            proj.update(dt)
+
+        # Remove projéteis que chegaram ao destino
+        self.projectiles = [p for p in self.projectiles if not p.has_reached_target()]
 
     def draw(self):
         self.map.draw(self.screen)
@@ -121,6 +132,9 @@ class GameManager:
 
         for enemy in self.enemies:
             enemy.draw(self.screen)
+
+        for proj in self.projectiles:
+            proj.draw(self.screen)
 
         self.tower_placer.draw(self.screen)
         self.message_manager.draw(self.screen)
