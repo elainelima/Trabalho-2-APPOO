@@ -8,6 +8,9 @@ from ui.screens.victory_screen import draw_victory_screen
 from ui.components.pause_menu import draw_pause_menu
 from util.ranking_service import RankService
 from ui.screens.ranking_screen import draw_ranking_screen
+from ui.screens.map_selection_screen import MapSelectionScreen
+from ui.screens.inicial_screen import StartScreen
+
 from pygame import mixer
 
 def carregar_rankings():
@@ -29,30 +32,38 @@ def main(ranking: RankService):
     font = pygame.font.SysFont(None, 72)
     button_font = pygame.font.SysFont(None, 36)
 
-    interface = InterfaceInicial(screen)
-    victory = False
-    paused = False
-    pause_buttons = None
+    # Tela inicial
+    start_screen = StartScreen(screen, font)
+    start_screen.run()
 
+
+    # Tela de nickname + dificuldade
+    interface = InterfaceInicial(screen)
     difficulty, nick = interface.run()
     if difficulty is None:
         pygame.quit()
         return
+
+    # Tela de seleção de mapa
     
+    map_selector = MapSelectionScreen(screen, button_font)
+    SelectedMapClass = map_selector.run()
+    game_map = SelectedMapClass()  
+    game = GameManager(screen, difficulty, game_map)
+
 
     mixer.music.load('assets/sounds/watery-graves-181198.mp3')
     mixer.music.play(-1)
-
-    game_map = GreenMap()
-    game = GameManager(screen, difficulty, game_map)
     game.player_nick = nick
 
     game_over = False
-    running = True
-
+    victory = False
+    paused = False
+    pause_buttons = None
     ranking_screen = False
     rankings = carregar_rankings()
 
+    running = True
     while running:
         dt = game.clock.tick(60) / 1000
 
@@ -91,13 +102,13 @@ def main(ranking: RankService):
             pause_buttons = draw_pause_menu(screen, WIDTH, HEIGHT, font, button_font)
         elif game_over:
             ranking_buttons = draw_ranking_screen(screen, WIDTH, HEIGHT, font, button_font, ranking)
-            if pygame.mouse.get_pressed()[0]:  # Botão esquerdo clicado
+            if pygame.mouse.get_pressed()[0]:
                 mouse_pos = pygame.mouse.get_pos()
                 if ranking_buttons["menu"].collidepoint(mouse_pos):
-                    main(ranking)  
+                    main(ranking)
                     return
                 elif ranking_buttons["retry"].collidepoint(mouse_pos):
-                    game = GameManager(screen, difficulty, GreenMap())  # reinicia o jogo
+                    game = GameManager(screen, difficulty, GreenMap())
                     game.player_nick = nick
                     game_over = False
 

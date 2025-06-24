@@ -144,15 +144,27 @@ class GameManager:
             preview = pygame.transform.scale(tower_image, (TILE_SIZE, TILE_SIZE))
             self.screen.blit(preview, (mouse_pos[0] - TILE_SIZE // 2, mouse_pos[1] - TILE_SIZE // 2))
 
-        self.ui.draw(self.screen, self.wave_manager.current_wave, len(self.enemies), self.base_hp)
-        self.draw_gold(self.screen, self.player, pygame.font.SysFont(None, 30))
-        self.draw_score(self.screen, pygame.font.SysFont(None, 30))
+        self.ui.draw(
+            self.screen,
+            self.wave_manager.current_wave,
+            len(self.enemies),
+            self.base_hp,
+            self.player.gold,
+            is_endless=(self.difficulty == "endless"),
+            score=self.score,
+            max_waves=self.max_waves if self.difficulty != "endless" else 0
+        )
 
     def handle_event(self, event: pygame.event.Event):
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            self.tower_menu.handle_event(event)
-            if self.tower_menu.selected:
-                self.try_build_tower(self.tower_menu.selected)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            
+                if self.ui.pause_button_rect.collidepoint(event.pos):
+                    return "pause"
+
+                self.tower_menu.handle_event(event)
+                if self.tower_menu.selected:
+                    self.try_build_tower(self.tower_menu.selected)
+            return None
 
     def try_build_tower(self, tower_type: str):
         pos = pygame.mouse.get_pos()

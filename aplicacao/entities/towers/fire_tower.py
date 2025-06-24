@@ -5,7 +5,7 @@ from assets.effects.fire_projectile import FireProjectile
 
 class FireTower(TowerBase):
     def __init__(self, grid_pos: tuple[int], image: str, folder: str):
-        super().__init__(grid_pos, image)
+        super().__init__(grid_pos, image,folder)
         self.damage = 50
         self.range = 80
         self.fire_rate = 0.2
