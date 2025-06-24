@@ -8,23 +8,22 @@ from entities.enemy import Enemy
 class TowerBase(ABC):
     COST = 25
 
-    def __init__(self, grid_pos: int, image: str):
+    def __init__(self, grid_pos: int, image: str,folder: str = ""):
         self.grid_pos = grid_pos
-        
         self.pos = grid_to_pixel(grid_pos)
         self.time_since_last_shot = 0
-        self.damage = 25
-        
-        self.sprite = AnimatedSprite(image, self.pos, 6, 30)  # já deve posicionar pelo centro
+        self.sprite = AnimatedSprite(image, self.pos, 6, 30,folder=folder)  # já deve posicionar pelo centro
 
-    def update(self, dt: int, enemies: list[Enemy]):
-        self.time_since_last_shot += (1 + dt)
+    def update(self, dt: float, enemies: list[Enemy]):
+        self.time_since_last_shot += dt
         target = self.find_target(enemies)
-        if target and self.time_since_last_shot >= 1 / self.fire_rate:
-            self.shoot(target)
-            self.time_since_last_shot = 0
 
-        self.sprite.update()
+        if target and self.time_since_last_shot >= 1 / self.fire_rate:
+            self.time_since_last_shot = 0
+            return self.shoot(target)
+
+        self.sprite.update(dt)
+        return None
 
     def find_target(self, enemies: list[Enemy]):
         for enemy in enemies:
@@ -32,9 +31,10 @@ class TowerBase(ABC):
             if dist <= self.range and enemy.is_alive():
                 return enemy
         return None
-
+    
+    @abstractmethod
     def shoot(self, enemy: Enemy):
-        enemy.take_damage(self.damage)
+        pass
 
     def draw(self, screen: pygame.surface.Surface):
         # Desenha o sprite animado centralizado

@@ -8,7 +8,7 @@ class BeeEnemy(Enemy):
         super().__init__(path, image, folder)
     
         self.speed = 15
-        self.damage = 5
+        self.damage = 25
         self.folder = folder
 
 

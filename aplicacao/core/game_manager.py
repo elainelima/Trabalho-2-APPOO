@@ -4,8 +4,8 @@ from entities.player import Player
 from core.tower_placer import TowerPlacer
 from core.wave_manager import WaveManager
 from ui.hud import HUD
-from ui.message_manager import MessageManager
-from ui.tower_menu import TowerMenu
+from ui.components.message_manager import MessageManager
+from ui.components.tower_menu import TowerMenu
 from util.utils import pixel_to_grid
 from entities.towers.fire_tower import FireTower
 from entities.towers.ice_tower import IceTower
@@ -15,12 +15,14 @@ from core.map import GameMapBase
 class GameManager:
     def __init__(self, screen: pygame.Surface, difficulty: str, map_class: GameMapBase):
         self.screen = screen
+        self.score = 0
         self.clock = pygame.time.Clock()
         self.difficulty = difficulty
         self.map = map_class
 
         self.towers = []
         self.enemies = []
+        self.projectiles = []
         self.player = Player()
         self.game_won = False
         self.base_hp = 100
@@ -60,6 +62,7 @@ class GameManager:
 
         self._handle_input()
         self._update_components(dt)
+        self._update_projectiles(dt)
         self._update_enemies(dt)
         self._remove_defeated_enemies()
         self._progress_waves()
@@ -78,8 +81,10 @@ class GameManager:
         self.wave_manager.update(dt, self.enemies)
 
         for tower in self.towers:
-            tower.update(dt, self.enemies)
-            tower.sprite.update()
+            projectile = tower.update(dt, self.enemies)  # só uma chamada
+            tower.sprite.update(dt)
+            if projectile:
+                self.projectiles.append(projectile)
             
         for enemy in self.enemies:
             enemy.update(dt)
@@ -91,19 +96,31 @@ class GameManager:
                 self.base_hp -= enemy.damage
             elif not enemy.is_alive() and not enemy.rewarded:
                 self.player.gold += enemy.reward
-                enemy.rewarded = True        
+                enemy.rewarded = True
+                if self.difficulty == "endless":
+                    self.score += 1     
 
     def _remove_defeated_enemies(self):
       self.enemies = [e for e in self.enemies if e.is_alive() and not e.reached_end()]   
 
     def _progress_waves(self):
+        wave_over = self.wave_manager.is_wave_over(self.enemies)
+
         if self.difficulty == "endless":
-            self.wave_manager.start_next_wave(auto=True)
-        elif not self.wave_manager.is_in_progress() and not self.enemies:
-            if self.wave_manager.current_wave >= self.max_waves:
-                self.game_won = True
-            else:
-                self.wave_manager.start_next_wave()           
+            if wave_over and not self.wave_manager.is_in_progress():
+                self.wave_manager.start_next_wave()
+        else:
+            if wave_over:
+                if self.wave_manager.current_wave >= self.max_waves:
+                    self.game_won = True
+                else:
+                    self.wave_manager.start_next_wave()
+    
+    def _update_projectiles(self, dt: float):
+        for proj in self.projectiles:
+            proj.update(dt)
+        # Remove projéteis que chegaram ao destino
+        self.projectiles = [p for p in self.projectiles if not p.has_reached_target()]
 
     def draw(self):
         self.map.draw(self.screen)
@@ -113,6 +130,9 @@ class GameManager:
 
         for enemy in self.enemies:
             enemy.draw(self.screen)
+
+        for proj in self.projectiles:
+            proj.draw(self.screen)
 
         self.tower_placer.draw(self.screen)
         self.message_manager.draw(self.screen)
@@ -124,14 +144,25 @@ class GameManager:
             preview = pygame.transform.scale(tower_image, (TILE_SIZE, TILE_SIZE))
             self.screen.blit(preview, (mouse_pos[0] - TILE_SIZE // 2, mouse_pos[1] - TILE_SIZE // 2))
 
-        self.ui.draw(self.screen, self.wave_manager.current_wave, len(self.enemies), self.base_hp)
-        self.draw_gold(self.screen, self.player, pygame.font.SysFont(None, 30))
+        self.ui.draw(
+            self.screen,
+            self.wave_manager.current_wave,
+            len(self.enemies),
+            self.base_hp,
+            self.player.gold,
+            is_endless=(self.difficulty == "endless"),
+            score=self.score,
+            max_waves=self.max_waves if self.difficulty != "endless" else 0
+        )
 
     def handle_event(self, event: pygame.event.Event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.ui.pause_button_rect.collidepoint(event.pos):
+                return "pause"  # Sinaliza pausa ao loop principal
             self.tower_menu.handle_event(event)
             if self.tower_menu.selected:
                 self.try_build_tower(self.tower_menu.selected)
+
 
     def try_build_tower(self, tower_type: str):
         pos = pygame.mouse.get_pos()
@@ -155,11 +186,15 @@ class GameManager:
     def create_tower_by_type(self, tower_type: str, grid_pos: tuple[int]):
             if tower_type == "Fire":
                 from entities.towers.fire_tower import FireTower
-                return FireTower(grid_pos, "assets/towers/redMoon.png")
+                return FireTower(grid_pos, "redMoon.png",folder="assets/towers/")
             elif tower_type == "Ice":
                 from entities.towers.ice_tower import IceTower
-                return IceTower(grid_pos, "assets/towers/Obelisk.png")
+                return IceTower(grid_pos, "Obelisk.png",folder="assets/towers/")
             elif tower_type == "Sniper":
                 from entities.towers.sniper_tower import SniperTower
-                return SniperTower(grid_pos, "assets/towers/4.png")
+                return SniperTower(grid_pos, "4.png",folder="assets/towers/")
             return None     
+    
+    def draw_score(self, surface, font):
+        text = font.render(f"Score: {self.score}", True, (255, 255, 255))
+        surface.blit(text, (10, 130))
