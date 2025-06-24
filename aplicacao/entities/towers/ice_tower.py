@@ -5,6 +5,8 @@ from entities.enemy import Enemy
 from assets.effects.ice_projectile import IceProjectile
 
 class IceTower(TowerBase):
+    COST=60
+    UPGRADE_COSTS = [60, 120, 180]
     def __init__(self, grid_pos: tuple[int], image: str,folder:str):
         super().__init__(grid_pos, image,folder)
         self.damage = 15

@@ -6,6 +6,7 @@ from core.wave_manager import WaveManager
 from ui.hud import HUD
 from ui.components.message_manager import MessageManager
 from ui.components.tower_menu import TowerMenu
+from ui.components.tower_action_menu import TowerActionMenu
 from util.utils import pixel_to_grid
 from entities.towers.fire_tower import FireTower
 from entities.towers.ice_tower import IceTower
@@ -39,6 +40,7 @@ class GameManager:
         self.message_manager = MessageManager()
         self.tower_placer = TowerPlacer(self.map, self.towers, self.player)
         self.wave_manager = WaveManager(self.map.get_path(), difficulty)
+        self.tower_action_menu = TowerActionMenu()
 
         self.TOWER_TYPES = {
             "Fire": FireTower,
@@ -144,6 +146,8 @@ class GameManager:
             preview = pygame.transform.scale(tower_image, (TILE_SIZE, TILE_SIZE))
             self.screen.blit(preview, (mouse_pos[0] - TILE_SIZE // 2, mouse_pos[1] - TILE_SIZE // 2))
 
+        self.tower_action_menu.draw(self.screen)    
+
         self.ui.draw(
             self.screen,
             self.wave_manager.current_wave,
@@ -155,10 +159,22 @@ class GameManager:
             max_waves=self.max_waves if self.difficulty != "endless" else 0
         )
 
-    def handle_event(self, event: pygame.event.Event):
+    def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.ui.pause_button_rect.collidepoint(event.pos):
-                return "pause"  # Sinaliza pausa ao loop principal
+                return "pause"
+
+            result = self.tower_action_menu.handle_event(event)
+            if result == "sell" and self.tower_action_menu.tower:
+                self.sell_tower(self.tower_action_menu.tower)
+            elif result == "upgrade" and self.tower_action_menu.tower:
+                self.upgrade_tower(self.tower_action_menu.tower)
+
+            for tower in self.towers:
+                if tower.rect.collidepoint(event.pos):
+                    self.tower_action_menu.open(tower, event.pos)
+                    return
+
             self.tower_menu.handle_event(event)
             if self.tower_menu.selected:
                 self.try_build_tower(self.tower_menu.selected)
@@ -198,3 +214,15 @@ class GameManager:
     def draw_score(self, surface, font):
         text = font.render(f"Score: {self.score}", True, (255, 255, 255))
         surface.blit(text, (10, 130))
+
+
+    def sell_tower(self, tower):
+        self.player.gold += tower.get_sell_value()  
+        self.towers.remove(tower)
+
+    def upgrade_tower(self, tower):
+        if self.player.gold >= tower.get_upgrade_cost():  
+            tower.upgrade()
+            self.player.gold -= tower.get_upgrade_cost()
+        else:
+            self.message_manager.show("Ouro insuficiente para upgrade!")

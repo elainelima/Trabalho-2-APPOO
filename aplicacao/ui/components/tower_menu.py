@@ -57,6 +57,7 @@ class TowerMenu:
             cost = font.render(f"Custo: {card['cost']}", True, (255, 215, 0))
             surface.blit(name, (rect.x + 70, rect.y + 10))
             surface.blit(cost, (rect.x + 70, rect.y + 40))
+            
 
     def handle_event(self, event):
         if not self.visible or event.type != pygame.MOUSEBUTTONDOWN:

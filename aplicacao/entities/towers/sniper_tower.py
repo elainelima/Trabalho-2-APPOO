@@ -4,7 +4,8 @@ from assets.drawAnimated import AnimatedSprite
 from assets.effects.sniper_projectile import SniperProjectile
 
 class SniperTower(TowerBase):
-    COST = 80
+    COST=80
+    UPGRADE_COSTS = [80, 160, 240]
     def __init__(self, grid_pos: tuple[int], image: str, folder: str):
         super().__init__(grid_pos, image, folder)  
         self.damage = 45

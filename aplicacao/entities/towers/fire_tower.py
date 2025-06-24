@@ -4,6 +4,8 @@ from assets.drawAnimated import AnimatedSprite
 from assets.effects.fire_projectile import FireProjectile
 
 class FireTower(TowerBase):
+    COST=50
+    UPGRADE_COSTS = [50, 100, 150]
     def __init__(self, grid_pos: tuple[int], image: str, folder: str):
         super().__init__(grid_pos, image,folder)
         self.damage = 50
