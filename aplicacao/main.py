@@ -8,7 +8,11 @@ from ui.screens.victory_screen import draw_victory_screen
 from ui.components.pause_menu import draw_pause_menu
 from util.ranking_service import RankService
 from ui.screens.ranking_screen import draw_ranking_screen
+from pygame import mixer
 
+def carregar_rankings():
+
+    return [("Jogador1", 1500), ("Jogador2", 1200), ("Jogador3", 1100)]
 
 import sys
 import os
@@ -35,12 +39,19 @@ def main(ranking: RankService):
         pygame.quit()
         return
     
+
+    mixer.music.load('assets/sounds/watery-graves-181198.mp3')
+    mixer.music.play(-1)
+
     game_map = GreenMap()
     game = GameManager(screen, difficulty, game_map)
     game.player_nick = nick
 
     game_over = False
     running = True
+
+    ranking_screen = False
+    rankings = carregar_rankings()
 
     while running:
         dt = game.clock.tick(60) / 1000
@@ -50,7 +61,10 @@ def main(ranking: RankService):
                 running = False
                 return
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                paused = not paused
+                if ranking_screen:
+                    ranking_screen = False
+                else:
+                    paused = not paused
 
             if paused:
                 if event.type == pygame.MOUSEBUTTONDOWN:
