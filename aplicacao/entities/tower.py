@@ -8,23 +8,22 @@ from entities.enemy import Enemy
 class TowerBase(ABC):
     COST = 25
 
-    def __init__(self, grid_pos: int, image: str):
+    def __init__(self, grid_pos: int, image: str,folder: str = ""):
         self.grid_pos = grid_pos
         self.pos = grid_to_pixel(grid_pos)
         self.time_since_last_shot = 0
-        self.sprite = AnimatedSprite(image, self.pos, 6, 30)  # já deve posicionar pelo centro
+        self.sprite = AnimatedSprite(image, self.pos, 6, 30,folder=folder)  # já deve posicionar pelo centro
 
     def update(self, dt: float, enemies: list[Enemy]):
         self.time_since_last_shot += dt
         target = self.find_target(enemies)
-        projectile = None
 
         if target and self.time_since_last_shot >= 1 / self.fire_rate:
-            projectile = self.shoot(target)
             self.time_since_last_shot = 0
+            return self.shoot(target)
 
         self.sprite.update(dt)
-        return projectile
+        return None
 
     def find_target(self, enemies: list[Enemy]):
         for enemy in enemies:

@@ -81,8 +81,7 @@ class GameManager:
         self.wave_manager.update(dt, self.enemies)
 
         for tower in self.towers:
-            tower.update(dt, self.enemies)
-            projectile = tower.update(dt, self.enemies)
+            projectile = tower.update(dt, self.enemies)  # só uma chamada
             tower.sprite.update(dt)
             if projectile:
                 self.projectiles.append(projectile)
@@ -120,7 +119,6 @@ class GameManager:
     def _update_projectiles(self, dt: float):
         for proj in self.projectiles:
             proj.update(dt)
-
         # Remove projéteis que chegaram ao destino
         self.projectiles = [p for p in self.projectiles if not p.has_reached_target()]
 
@@ -178,13 +176,13 @@ class GameManager:
     def create_tower_by_type(self, tower_type: str, grid_pos: tuple[int]):
             if tower_type == "Fire":
                 from entities.towers.fire_tower import FireTower
-                return FireTower(grid_pos, "assets/towers/redMoon.png")
+                return FireTower(grid_pos, "redMoon.png",folder="assets/towers/")
             elif tower_type == "Ice":
                 from entities.towers.ice_tower import IceTower
-                return IceTower(grid_pos, "assets/towers/Obelisk.png")
+                return IceTower(grid_pos, "Obelisk.png",folder="assets/towers/")
             elif tower_type == "Sniper":
                 from entities.towers.sniper_tower import SniperTower
-                return SniperTower(grid_pos, "assets/towers/4.png")
+                return SniperTower(grid_pos, "4.png",folder="assets/towers/")
             return None     
     
     def draw_score(self, surface, font):

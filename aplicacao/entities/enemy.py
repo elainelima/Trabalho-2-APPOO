@@ -1,28 +1,39 @@
 import pygame
-from settings import TILE_SIZE, COLOR_ENEMY
+from settings import TILE_SIZE
 from assets.drawAnimated import AnimatedSprite
 
 class Enemy:
     def __init__(self, path: list[tuple], image: str, folder: str):
-        self.path = path  # lista de posições em pixels para seguir
+        self.path = path
         self.current_point = 0
-        self.speed = 100  # pixels por segundo
+        self.speed = 100
         self.image = image
 
-        # Começa na posição do primeiro ponto do caminho
-        self.pos = list(self.path[0])  # posição em pixels (x, y)
+        self.pos = list(self.path[0])
         self.radius = 15
         self.hp = 100
         self.damage = 6
         self.reward = 10
         self.alive = True
         self.rewarded = False
-        self.sprite = AnimatedSprite(self.image, self.pos, 6, folder=folder)
 
+        self.folder = folder
+        self.last_direction = "D"  # Começa olhando para a direita
+
+        self.sprite = AnimatedSprite(f"{folder}D_Walk.png", self.pos, 6, folder=folder)
+        self.dead_sprite = None
+        self.is_dying = False
 
     def update(self, dt):
-        if self.current_point + 1 < len(self.path):
+        if self.is_dying:
+            if self.dead_sprite:
+                self.dead_sprite.update(dt)
+                self.dead_sprite.set_position(self.pos)
+                if self.dead_sprite.index == len(self.dead_sprite.images) - 1:
+                    self.is_dying = False  # Encerra a animação de morte
+            return
 
+        if self.current_point + 1 < len(self.path):
             target = self.path[self.current_point + 1]
             dir_vec = (target[0] - self.pos[0], target[1] - self.pos[1])
             dist = (dir_vec[0] ** 2 + dir_vec[1] ** 2) ** 0.5
@@ -41,42 +52,47 @@ class Enemy:
                 self.pos[0] += dir_norm[0] * move_dist
                 self.pos[1] += dir_norm[1] * move_dist
 
-            if dir_vec[0] > dir_vec[1]:
-
-                self.sprite.update(True)
-
+            # Atualiza direção e animação
+            if abs(dir_vec[0]) > abs(dir_vec[1]):
+                if dir_vec[0] < 0:
+                    direction = "S_Walk.png"
+                    self.last_direction = "S"
+                else:
+                    direction = "D_Walk.png"
+                    self.last_direction = "D"
             else:
-                self.sprite.update(False)
+                if dir_vec[1] < 0:
+                    direction = "U_Walk.png"
+                    self.last_direction = "U"
+                else:
+                    direction = "D_Walk.png"
+                    self.last_direction = "D"
 
-            # Atualizando posição do personagem e sua animação
-            self.sprite.rect.center = (self.pos[0], self.pos[1])
-
-    def is_alive(self):
-        return self.hp > 0
+            self.sprite.update(dt, animation_name=direction)
+            self.sprite.set_position(self.pos)
 
     def take_damage(self, amount):
-        print("Hp do inimigo :", self.hp)
         self.hp -= amount
-        print("Hp do inimigo pos tiro :", self.hp)
         if self.hp <= 0 and self.alive:
             self.alive = False
+            self.is_dying = True
+            death_path = f"{self.folder}{self.last_direction}_Death.png"
+            self.dead_sprite = AnimatedSprite(death_path, self.pos, 6, folder=self.folder)
+            self.dead_sprite.set_position(self.pos)
 
     def is_alive(self):
-        return self.alive
+        return self.alive or self.is_dying
 
     def reached_end(self):
         return self.current_point >= len(self.path) - 1
 
     def draw(self, screen):
-        # Desenha o sprite animado
-        screen.blit(self.sprite.image, self.sprite.rect)
+        if self.is_dying and self.dead_sprite:
+            screen.blit(self.dead_sprite.image, self.dead_sprite.rect)
+        else:
+            screen.blit(self.sprite.image, self.sprite.rect)
 
-        # Cria uma superfície com canal alfa
-        transparente = pygame.Surface(self.sprite.rect.size, pygame.SRCALPHA)
-        
-        # Desenha o retângulo semi-transparente nessa superfície
-        pygame.draw.rect(transparente, (255, 100, 0, 0), transparente.get_rect(), 2)
-
-        # Desenha essa superfície por cima da tela, no local do sprite
-        screen.blit(transparente, self.sprite.rect.center)
-
+        # (opcional) HUD de hitbox transparente
+            transparente = pygame.Surface(self.sprite.rect.size, pygame.SRCALPHA)
+            pygame.draw.rect(transparente, (255, 100, 0, 0), transparente.get_rect(), 2)
+            screen.blit(transparente, self.sprite.rect.center)

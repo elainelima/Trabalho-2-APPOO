@@ -94,7 +94,7 @@ def main(ranking: RankService):
             if pygame.mouse.get_pressed()[0]:  # Botão esquerdo clicado
                 mouse_pos = pygame.mouse.get_pos()
                 if ranking_buttons["menu"].collidepoint(mouse_pos):
-                    main()  # ou chame o menu inicial novamente
+                    main(ranking)  
                     return
                 elif ranking_buttons["retry"].collidepoint(mouse_pos):
                     game = GameManager(screen, difficulty, GreenMap())  # reinicia o jogo
