@@ -7,9 +7,10 @@ from settings import TILE_SIZE
 import random
 
 class WaveManager:
-    def __init__(self, path: list[tuple],difficulty):
+    def __init__(self, path: list[tuple], difficulty, enemy_classes: list[type]):
         self.path = path
         self.difficulty = difficulty
+        self.enemy_classes = enemy_classes  
         self.current_wave = 0
         self.wave_in_progress = False
         self.spawn_timer = 0
@@ -17,6 +18,7 @@ class WaveManager:
         self.enemies_spawned = 0
         self.spawn_delay = 0.8  # segundos
         self.is_endless = difficulty == "endless"
+
 
 
     def start_next_wave(self, auto=False):
@@ -42,6 +44,8 @@ class WaveManager:
         self.enemies_to_spawn = base + self.current_wave * fator + bonus
 
 
+
+
     def update(self, dt: int, enemies: list):
         if not self.wave_in_progress:
             return
@@ -51,25 +55,19 @@ class WaveManager:
             self.spawn_timer = 0
             self.enemies_spawned += 1
 
+            # Exemplo de pesos baseados na wave
             if self.current_wave < 5:
-                tipos = ["Bee"]
+                pool = self.enemy_classes[:1]
                 pesos = [1]
             elif self.current_wave < 10:
-                tipos = ["Bee", "Slime"]
+                pool = self.enemy_classes[:2]
                 pesos = [0.7, 0.3]
             else:
-                tipos = ["Bee", "Slime", "Wolf"]
-                pesos = [0.5, 0.3, 0.2]
+                pool = self.enemy_classes
+                pesos = [0.5, 0.3, 0.2][:len(pool)]  # Garante que o tamanho de pesos corresponda
 
-            tipo = random.choices(tipos, weights=pesos, k=1)[0]
-
-            if tipo == "Bee":
-                new_enemy = BeeEnemy(self.path, "assets/enemies/bee/D_Walk.png", folder="assets/enemies/bee/")
-            elif tipo == "Slime":
-                new_enemy = SlimeEnemy(self.path, "assets/enemies/slime/D_Walk.png", folder="assets/enemies/slime/")
-            else:
-                new_enemy = WolfEnemy(self.path, "assets/enemies/wolf/S_Walk.png", folder="assets/enemies/wolf/")
-
+            enemy_class = random.choices(pool, weights=pesos, k=1)[0]
+            new_enemy = enemy_class(self.path)
             enemies.append(new_enemy)
 
         if self.enemies_spawned >= self.enemies_to_spawn and len(enemies) == 0:

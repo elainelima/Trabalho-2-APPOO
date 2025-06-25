@@ -23,6 +23,7 @@ class GameManager:
 
         self.towers = []
         self.enemies = []
+        self.enemy_types = self.map.get_enemy_types()
         self.projectiles = []
         self.player = Player()
         self.game_won = False
@@ -39,7 +40,7 @@ class GameManager:
         self.ui = HUD()
         self.message_manager = MessageManager()
         self.tower_placer = TowerPlacer(self.map, self.towers, self.player)
-        self.wave_manager = WaveManager(self.map.get_path(), difficulty)
+        self.wave_manager = WaveManager(self.map.get_path(), difficulty,self.enemy_types)
         self.tower_action_menu = TowerActionMenu()
 
         self.TOWER_TYPES = {
@@ -62,7 +63,7 @@ class GameManager:
         if self.game_won:
             return
 
-        self._handle_input()
+       
         self._update_components(dt)
         self._update_projectiles(dt)
         self._update_enemies(dt)
@@ -70,10 +71,6 @@ class GameManager:
         self._progress_waves()
 
 
-    def _handle_input(self):
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.tower_placer.handle_click()
 
     def _update_components(self, dt: int):
         self.map.update()
@@ -136,7 +133,9 @@ class GameManager:
         for proj in self.projectiles:
             proj.draw(self.screen)
 
-        self.tower_placer.draw(self.screen)
+        self.tower_placer.draw(self.screen)    
+
+    
         self.message_manager.draw(self.screen)
 
         self.tower_menu.draw(self.screen)
@@ -161,23 +160,64 @@ class GameManager:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            # Tenta construir torre via TowerPlacer
+            built = self.tower_placer.handle_click()
+            if built is not None:
+                # Se tentou construir (seja sucesso ou falha), limpa seleção do menu
+                self.tower_menu.selected = None
+                # Também limpa tower_placer, só por segurança
+                if built:
+                    print("[DEBUG] Torre construída com sucesso")
+                else:
+                    print("[DEBUG] Torre não construída (local inválido ou ouro insuficiente)")
+
+            # Pausa
             if self.ui.pause_button_rect.collidepoint(event.pos):
+                print("[DEBUG] Botão pause clicado")
                 return "pause"
 
+            # Menu de ações (vender/upgrade)
             result = self.tower_action_menu.handle_event(event)
             if result == "sell" and self.tower_action_menu.tower:
+                print("[DEBUG] Vendendo torre")
                 self.sell_tower(self.tower_action_menu.tower)
+                return
             elif result == "upgrade" and self.tower_action_menu.tower:
+                print("[DEBUG] Upgrading torre")
                 self.upgrade_tower(self.tower_action_menu.tower)
+                return
 
+            # Clicar em torre existente abre menu de ação
             for tower in self.towers:
                 if tower.rect.collidepoint(event.pos):
+                    print(f"[DEBUG] Torre clicada em {tower.grid_pos}")
                     self.tower_action_menu.open(tower, event.pos)
                     return
 
+            # Clicar no menu lateral para selecionar torre
             self.tower_menu.handle_event(event)
             if self.tower_menu.selected:
-                self.try_build_tower(self.tower_menu.selected)
+                selected_type = self.tower_menu.selected
+                print(f"[DEBUG] Torre selecionada no menu: {selected_type}")
+
+                def create_fn(grid_pos):
+                    return self.create_tower_by_type(selected_type, grid_pos)
+
+                self.tower_placer.set_selected_tower(
+                    selected_type,
+                    create_fn,
+                    self.message_manager
+                )
+                return  # não constrói torre no mesmo clique
+
+            # Se já tem torre selecionada para construir, tentar construir ao clicar no mapa
+            if self.tower_placer.selected_tower_type:
+                print(f"[DEBUG] Tentando construir torre: {self.tower_placer.selected_tower_type} em {pygame.mouse.get_pos()}")
+                self.tower_placer.handle_click()
+                return
+
+                
+
 
 
     def try_build_tower(self, tower_type: str):
@@ -221,8 +261,9 @@ class GameManager:
         self.towers.remove(tower)
 
     def upgrade_tower(self, tower):
-        if self.player.gold >= tower.get_upgrade_cost():  
+        upgrade_cost = tower.get_upgrade_cost()
+        if self.player.gold >= upgrade_cost:
+            self.player.gold -= upgrade_cost
             tower.upgrade()
-            self.player.gold -= tower.get_upgrade_cost()
         else:
             self.message_manager.show("Ouro insuficiente para upgrade!")

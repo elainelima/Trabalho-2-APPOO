@@ -1,12 +1,11 @@
 
 from entities.enemy import Enemy
-from assets.drawAnimated import AnimatedSprite
 
-class SlimeEnemy(Enemy):
+class SkelletonEnemy(Enemy):
 
     def __init__(self, path: str):
-        image = "assets/enemies/slime/D_Walk.png"
-        folder = "assets/enemies/slime/"
+        image = "assets/enemies/skelleton/D_Walk.png"
+        folder = "assets/enemies/skelleton/"
         super().__init__(path, image, folder)
         self.hp = 100
         self.speed = 10

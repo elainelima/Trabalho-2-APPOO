@@ -1,13 +1,10 @@
-import pygame
 from entities.enemy import Enemy
-from assets.drawAnimated import AnimatedSprite
 
-
-class WolfEnemy(Enemy):
+class GoblinEnemy(Enemy):
 
     def __init__(self, path: str,):
-        image = "assets/enemies/wolf/D_Walk.png"
-        folder = "assets/enemies/wolf/"
+        image = "assets/enemies/goblin/D_Walk.png"
+        folder = "assets/enemies/goblin/"
         super().__init__(path, image, folder)
         self.hp = 200
         self.speed = 20

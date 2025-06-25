@@ -6,13 +6,8 @@ class Enemy:
     def __init__(self, path: list[tuple], image: str, folder: str):
         self.path = path
         self.current_point = 0
-        self.speed = 100
         self.image = image
-
         self.pos = list(self.path[0])
-        self.radius = 15
-        self.hp = 100
-        self.damage = 6
         self.reward = 10
         self.alive = True
         self.rewarded = False
@@ -53,24 +48,30 @@ class Enemy:
                 self.pos[1] += dir_norm[1] * move_dist
 
             # Atualiza direção e animação
+            # Se estiver andando para a direita, usa flip_h=True na animação de "S_Walk.png"
             if abs(dir_vec[0]) > abs(dir_vec[1]):
                 if dir_vec[0] < 0:
                     direction = "S_Walk.png"
+                    flip = False
                     self.last_direction = "S"
                 else:
-                    direction = "D_Walk.png"
+                    direction = "S_Walk.png"
+                    flip = True
                     self.last_direction = "D"
             else:
                 if dir_vec[1] < 0:
                     direction = "U_Walk.png"
+                    flip = False
                     self.last_direction = "U"
                 else:
                     direction = "D_Walk.png"
+                    flip = False
                     self.last_direction = "D"
 
-            self.sprite.update(dt, animation_name=direction)
-            self.sprite.set_position(self.pos)
 
+            self.sprite.update(dt, animation_name=direction, flip_h=flip)
+            self.sprite.set_position(self.pos)
+            
     def take_damage(self, amount):
         self.hp -= amount
         if self.hp <= 0 and self.alive:

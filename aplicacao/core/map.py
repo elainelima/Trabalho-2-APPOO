@@ -32,6 +32,10 @@ class GameMapBase(ABC):
     def draw_tile(self, surface: pygame.surface.Surface, rect: pygame.Rect, row: int, col: int):
         pass
 
+    @abstractmethod
+    def get_enemy_types(self):
+        pass
+
     def is_buildable(self, tile_pos: tuple):
         row, col = tile_pos
         if row < 0 or col < 0 or row >= MAP_ROWS or col >= MAP_COLS:

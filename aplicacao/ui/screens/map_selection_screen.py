@@ -1,5 +1,6 @@
 import pygame
 from maps.green_map import GreenMap
+from maps.graveyard_map import GraveyardMap
 
 class MapSelectionScreen:
     def __init__(self, screen, font, background_path="assets/backgrounds/map_selection_bg.png"):
@@ -12,7 +13,7 @@ class MapSelectionScreen:
 
         self.maps = [
             {"name": "Mapa 1", "image": "assets/GreenMap.png", "class": GreenMap},
-            {"name": "Mapa 2", "image": "assets/GreenMap.png", "class": GreenMap}
+            {"name": "Mapa 2", "image": "assets/GraveyardMap.png", "class": GraveyardMap}
         ]
 
     def render_text_with_outline(self, text, color=(255, 255, 255), outline_color=(0, 0, 0)):
