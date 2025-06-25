@@ -3,7 +3,7 @@ from settings import TILE_SIZE
 from assets.drawAnimated import AnimatedSprite
 
 class Enemy:
-    def __init__(self, path: list[tuple], image: str, folder: str):
+    def __init__(self, path: list[tuple], image: str, numImage:str, folder: str,num_images_map=None):
         self.path = path
         self.current_point = 0
         self.image = image
@@ -15,7 +15,7 @@ class Enemy:
         self.folder = folder
         self.last_direction = "D"  # Começa olhando para a direita
 
-        self.sprite = AnimatedSprite(f"{folder}D_Walk.png", self.pos, 6, folder=folder)
+        self.sprite = AnimatedSprite(f"{folder}D_Walk.png", self.pos, numImages=numImage, folder=folder,num_images_map=num_images_map)
         self.dead_sprite = None
         self.is_dying = False
 
@@ -48,15 +48,14 @@ class Enemy:
                 self.pos[1] += dir_norm[1] * move_dist
 
             # Atualiza direção e animação
-            # Se estiver andando para a direita, usa flip_h=True na animação de "S_Walk.png"
             if abs(dir_vec[0]) > abs(dir_vec[1]):
                 if dir_vec[0] < 0:
                     direction = "S_Walk.png"
-                    flip = False
+                    flip = bool(self.sprite.num_images_map)
                     self.last_direction = "S"
                 else:
                     direction = "S_Walk.png"
-                    flip = True
+                    flip = not bool(self.sprite.num_images_map)
                     self.last_direction = "D"
             else:
                 if dir_vec[1] < 0:

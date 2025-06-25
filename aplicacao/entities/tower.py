@@ -4,10 +4,12 @@ from util.utils import grid_to_pixel
 from assets.drawAnimated import AnimatedSprite
 from settings import TILE_SIZE
 from entities.enemy import Enemy
+import math
 
 class TowerBase(ABC):
-    def __init__(self, grid_pos: int, image: str,folder: str = ""):
+    def __init__(self, grid_pos: int, image: str,name:str,folder: str = "" ):
         self.grid_pos = grid_pos
+        self.name = name
         self.pos = grid_to_pixel(grid_pos)
         self.time_since_last_shot = 0
         self.sprite = AnimatedSprite(image, self.pos, 6, 30,folder=folder)
@@ -39,28 +41,52 @@ class TowerBase(ABC):
     def shoot(self, enemy: Enemy):
         pass
 
-    def draw(self, screen: pygame.surface.Surface):
-        # Desenha o sprite animado centralizado na posição
+   
+
+
+    def draw(self, screen: pygame.Surface):
+        mouse_pos = pygame.mouse.get_pos()
+        is_hovered = self.sprite.rect.collidepoint(mouse_pos)
+
+        # Desenha o sprite animado
         screen.blit(self.sprite.image, self.sprite.rect)
 
-        # Desenha o raio de alcance com transparência
-        alcance_surface = pygame.Surface((self.range * 2, self.range * 2), pygame.SRCALPHA)
-        pygame.draw.circle(alcance_surface, (100, 200, 255, 40), (self.range, self.range), self.range)
-        screen.blit(alcance_surface, (self.pos[0] - self.range, self.pos[1] - self.range))
+        # Se o mouse estiver sobre a torre, exibe o raio de alcance com efeitos visuais
+        if is_hovered:
+            # Superfície para o raio com alpha
+            alcance_surface = pygame.Surface((self.range * 2, self.range * 2), pygame.SRCALPHA)
 
-        # Remove o círculo azul central (comentado ou removido)
-        # pygame.draw.circle(screen, (100, 200, 255), self.pos, self.radius, 1)
+            # Animação de pulsação
+            pulse = 4 * math.sin(pygame.time.get_ticks() / 300)
+            dynamic_radius = int(self.range + pulse)
 
-        # Renderiza o nível ou "MAX" centralizado acima da torre
+            # Desenha o raio com transparência
+            pygame.draw.circle(
+                alcance_surface,
+                (100, 200, 255, 80),
+                (self.range, self.range),
+                dynamic_radius
+            )
+            screen.blit(alcance_surface, (self.pos[0] - self.range, self.pos[1] - self.range))
+
+            # Destaque na borda da torre
+            pygame.draw.rect(screen, (255, 255, 100), self.sprite.rect, 2, border_radius=8)
+
+            # Tooltip da torre
+            font = pygame.font.SysFont(None, 20)
+            info_text = font.render(self.name, True, (255, 255, 255))
+            tooltip_pos = (self.sprite.rect.centerx - info_text.get_width() // 2,
+                        self.sprite.rect.bottom + 20)
+            screen.blit(info_text, tooltip_pos)
+
+        # Renderiza o nível da torre acima do sprite
         font = pygame.font.SysFont(None, 20)
         level_label = "MAX" if self.level >= self.max_level else f"Lv {self.level}"
         level_text = font.render(level_label, True, (255, 255, 0))
-
-        # Centraliza o texto horizontalmente acima da torre (considerando self.sprite.rect)
         text_x = self.sprite.rect.centerx - level_text.get_width() // 2
-        text_y = self.sprite.rect.top - level_text.get_height() # 5 pixels acima da torre
-
+        text_y = self.sprite.rect.top - level_text.get_height()
         screen.blit(level_text, (text_x, text_y))
+
        
 
     def upgrade(self):
