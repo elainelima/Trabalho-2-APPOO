@@ -21,7 +21,7 @@ def carregar_rankings():
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from base_de_dados.base_dados import Base_Dados
+from base_de_dados.base_dados import BaseDados
 
 
 def main(ranking: RankService):
@@ -68,7 +68,7 @@ def main(ranking: RankService):
 
 
 if __name__ == "__main__":
-    db = Base_Dados()
+    db = BaseDados()
     db.connect()
     db.execute_script()
     ranking = RankService(db)

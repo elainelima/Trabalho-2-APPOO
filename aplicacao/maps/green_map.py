@@ -38,7 +38,7 @@ class GreenMap(GameMapBase):
         surface.blit(image_amplified, rect.topleft)
 
         if (row, col) in self.build_slots:
-            pygame.draw.rect(surface, (0, 100, 200), rect, 2)  # Slots de construção em azul escuro
+            pygame.draw.rect(surface, (0, 100, 200), rect, 4)  # Slots de construção em azul escuro
 
         pygame.draw.rect(surface, (30, 30, 30), rect, 1)  # Grade
 

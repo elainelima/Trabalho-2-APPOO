@@ -8,7 +8,8 @@ class IceTower(TowerBase):
     COST=60
     UPGRADE_COSTS = [60, 120, 180]
     def __init__(self, grid_pos: tuple[int], image: str,folder:str):
-        super().__init__(grid_pos, image,folder)
+        self.name = "Torre de Gelo"
+        super().__init__(grid_pos, image,self.name,folder)
         self.damage = 15
         self.range = 100
         self.fire_rate = 0.8

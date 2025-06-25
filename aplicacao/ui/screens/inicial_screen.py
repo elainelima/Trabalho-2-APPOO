@@ -5,7 +5,7 @@ class StartScreen:
         self.screen = screen
         self.font = font
         self.button_font = pygame.font.SysFont(None, 40)
-        self.bg_image = pygame.image.load("assets/backgrounds/start_screen_bg.png") 
+        self.bg_image = pygame.image.load("assets/backgrounds/start_screen_bg.jpg") 
         self.bg_image = pygame.transform.scale(self.bg_image, screen.get_size())
 
         self.title = self.font.render("Protect The Land", True, (255, 255, 255))

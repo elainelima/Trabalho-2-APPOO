@@ -4,4 +4,4 @@ import pygame
 class IceProjectile(ProjectileEffect):
     def __init__(self, start_pos, target_pos):
         super().__init__(start_pos, target_pos, "assets/projectiles/ice_shard.png", speed=250)
-        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.image = pygame.transform.scale(self.image, (60, 60))

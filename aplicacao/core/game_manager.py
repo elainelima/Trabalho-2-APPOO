@@ -160,46 +160,15 @@ class GameManager:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            # Tenta construir torre via TowerPlacer
-            built = self.tower_placer.handle_click()
-            if built is not None:
-                # Se tentou construir (seja sucesso ou falha), limpa seleção do menu
-                self.tower_menu.selected = None
-                # Também limpa tower_placer, só por segurança
-                if built:
-                    print("[DEBUG] Torre construída com sucesso")
-                else:
-                    print("[DEBUG] Torre não construída (local inválido ou ouro insuficiente)")
+            mouse_pos = event.pos
 
-            # Pausa
-            if self.ui.pause_button_rect.collidepoint(event.pos):
-                print("[DEBUG] Botão pause clicado")
+            # 1. Botão Pause
+            if self.ui.pause_button_rect.collidepoint(mouse_pos):
                 return "pause"
 
-            # Menu de ações (vender/upgrade)
-            result = self.tower_action_menu.handle_event(event)
-            if result == "sell" and self.tower_action_menu.tower:
-                print("[DEBUG] Vendendo torre")
-                self.sell_tower(self.tower_action_menu.tower)
-                return
-            elif result == "upgrade" and self.tower_action_menu.tower:
-                print("[DEBUG] Upgrading torre")
-                self.upgrade_tower(self.tower_action_menu.tower)
-                return
-
-            # Clicar em torre existente abre menu de ação
-            for tower in self.towers:
-                if tower.rect.collidepoint(event.pos):
-                    print(f"[DEBUG] Torre clicada em {tower.grid_pos}")
-                    self.tower_action_menu.open(tower, event.pos)
-                    return
-
-            # Clicar no menu lateral para selecionar torre
-            self.tower_menu.handle_event(event)
-            if self.tower_menu.selected:
-                selected_type = self.tower_menu.selected
-                print(f"[DEBUG] Torre selecionada no menu: {selected_type}")
-
+            # 2. Seleciona torre no menu lateral
+            selected_type = self.tower_menu.handle_event(event)
+            if selected_type:
                 def create_fn(grid_pos):
                     return self.create_tower_by_type(selected_type, grid_pos)
 
@@ -208,13 +177,35 @@ class GameManager:
                     create_fn,
                     self.message_manager
                 )
-                return  # não constrói torre no mesmo clique
-
-            # Se já tem torre selecionada para construir, tentar construir ao clicar no mapa
-            if self.tower_placer.selected_tower_type:
-                print(f"[DEBUG] Tentando construir torre: {self.tower_placer.selected_tower_type} em {pygame.mouse.get_pos()}")
-                self.tower_placer.handle_click()
+                self.tower_action_menu.visible = False  # fecha menu ação
                 return
+
+            # 3. Clicar em torre já construída abre menu de ação
+            for tower in self.towers:
+                if tower.rect.collidepoint(mouse_pos):
+                    self.tower_action_menu.open(tower, mouse_pos)
+                    self.tower_menu.selected = None  # cancela seleção menu torre
+                    self.tower_placer.clear_selection()
+                    return
+
+            # 4. Clique no menu de ação (upgrade, vender)
+            result = self.tower_action_menu.handle_event(event)
+            if result == "sell" and self.tower_action_menu.tower:
+                self.sell_tower(self.tower_action_menu.tower)
+                return
+            elif result == "upgrade" and self.tower_action_menu.tower:
+                self.upgrade_tower(self.tower_action_menu.tower)
+                return
+
+            # 5. Clique no mapa para construir torre se estiver selecionada
+            if self.tower_placer.selected_tower_type:
+                built = self.tower_placer.handle_click()
+                if built:
+                    print("[DEBUG] Torre construída com sucesso")
+                else:
+                    print("[DEBUG] Falha ao construir torre")
+            return
+
 
                 
 
