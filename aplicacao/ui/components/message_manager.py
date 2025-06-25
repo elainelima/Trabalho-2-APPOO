@@ -27,5 +27,5 @@ class MessageManager:
             temp_surface.blit(text_surface, (0, 0))
             surface.blit(temp_surface, (
                 surface.get_width() // 2 - text_surface.get_width() // 2,
-                20
+                surface.get_height() // 2 - text_surface.get_height() // 2
             ))

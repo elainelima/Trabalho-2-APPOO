@@ -1,6 +1,9 @@
 import pygame
 from core.map import GameMapBase
-from settings import TILE_SIZE, DARK_GRAY, GREEN
+from entities.enemies.bee import BeeEnemy
+from entities.enemies.slime import SlimeEnemy
+from entities.enemies.wolf import WolfEnemy
+from settings import TILE_SIZE
 
 class GreenMap(GameMapBase):
     def generate_path(self):
@@ -38,3 +41,6 @@ class GreenMap(GameMapBase):
             pygame.draw.rect(surface, (0, 100, 200), rect, 2)  # Slots de construção em azul escuro
 
         pygame.draw.rect(surface, (30, 30, 30), rect, 1)  # Grade
+
+    def get_enemy_types(self):
+        return [BeeEnemy, SlimeEnemy,WolfEnemy]

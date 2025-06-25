@@ -4,11 +4,13 @@ from assets.drawAnimated import AnimatedSprite
 
 class BeeEnemy(Enemy):
 
-    def __init__(self, path: str, image: str, folder: str):
+    def __init__(self, path: str):
+        image = "assets/enemies/bee/D_Walk.png"
+        folder= "assets/enemies/bee/"
         super().__init__(path, image, folder)
-    
+        self.hp = 60
         self.speed = 15
-        self.damage = 25
+        self.damage = 10
         self.folder = folder
 
 
