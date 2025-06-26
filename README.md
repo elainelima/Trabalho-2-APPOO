@@ -12,7 +12,7 @@ Divirta-se!
 
 1 - Abrir um Terminal 
 
-2 - Ir Até o diretorió : Trabalho-2---APOO/
+2 - Ir Até o diretorió : Trabalho-2---APOO/aplicacao
 
 3 - Executar o comando : pip install -r requirements.txt
 
