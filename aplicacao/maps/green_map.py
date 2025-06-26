@@ -19,8 +19,8 @@ class GreenMap(GameMapBase):
 
     def generate_build_slots(self):
         return [
-            (2, 0), (2, 4), (6, 4), (6, 6),
-            (6, 8), (5, 6), (8, 6), (8, 8)
+            (2, 0), (2, 4), (6, 4),(8, 12) ,
+            (6, 8), (4, 6), (8, 6), (8, 8)
         ]
     
     def get_path(self):
