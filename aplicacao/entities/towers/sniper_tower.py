@@ -1,17 +1,24 @@
 import pygame
 from entities.tower  import TowerBase
+from assets.drawAnimated import AnimatedSprite
+from assets.effects.sniper_projectile import SniperProjectile
 
 class SniperTower(TowerBase):
-    COST = 80
-    def __init__(self, grid_pos):
-        super().__init__(grid_pos)
+    COST=80
+    UPGRADE_COSTS = [80, 160, 240]
+    def __init__(self, grid_pos: tuple[int], image: str, folder: str):
+        self.name="Torre Sniper"
+        super().__init__(grid_pos, image,self.name, folder)  
         self.damage = 45
         self.range = 200
         self.fire_rate = 1.2
+        self.radius = 15
         self.cost = 80
+        self.sprite = AnimatedSprite(image, self.pos, 6, 30, folder=folder,dynamic=False)
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, (200, 200, 200), self.pos, self.radius)
-        s = pygame.Surface((self.range * 2, self.range * 2), pygame.SRCALPHA)
-        pygame.draw.circle(s, (200, 200, 200, 30), (self.range, self.range), self.range)
-        screen.blit(s, (self.pos[0] - self.range, self.pos[1] - self.range))
+    def method(self):
+        print("Torre Sniper")
+
+    def shoot(self, enemy):
+        enemy.take_damage(self.damage)
+        return SniperProjectile(self.pos, enemy.pos)

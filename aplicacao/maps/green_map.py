@@ -1,6 +1,9 @@
 import pygame
 from core.map import GameMapBase
-from settings import TILE_SIZE, DARK_GRAY, GREEN
+from entities.enemies.bee import BeeEnemy
+from entities.enemies.slime import SlimeEnemy
+from entities.enemies.wolf import WolfEnemy
+from settings import TILE_SIZE
 
 class GreenMap(GameMapBase):
     def generate_path(self):
@@ -16,22 +19,28 @@ class GreenMap(GameMapBase):
 
     def generate_build_slots(self):
         return [
-            (2, 0), (2, 4), (6, 4), (6, 6),
-            (6, 8), (5, 6), (8, 6), (8, 8)
+            (2, 0), (2, 4), (6, 4),(8, 12) ,
+            (6, 8), (4, 6), (8, 6), (8, 8)
         ]
     
     def get_path(self):
      return [(col * TILE_SIZE + TILE_SIZE // 2, row * TILE_SIZE + TILE_SIZE // 2) for row, col in self.path]
 
-    def draw_tile(self, surface, rect, row, col):
+    def draw_tile(self, surface: pygame.surface.Surface, rect: pygame.Rect, row: int, col: int):
         if self.grid[row][col] == 1:
-            color = GREEN  # Caminho
+            tileImage = "assets/tiles/FieldsTile_01.png"
         else:
-            color = DARK_GRAY  # Chão comum
-
-        pygame.draw.rect(surface, color, rect)
+            tileImage = "assets/tiles/FieldsTile_38.png"
+        
+        # Gera imagem de cada quadrado do caminho ou do restante do
+        image = pygame.image.load(tileImage).convert_alpha()
+        image_amplified = pygame.transform.scale(image, (TILE_SIZE, TILE_SIZE))
+        surface.blit(image_amplified, rect.topleft)
 
         if (row, col) in self.build_slots:
-            pygame.draw.rect(surface, (0, 100, 200), rect, 2)  # Slots de construção em azul escuro
+            pygame.draw.rect(surface, (0, 100, 200), rect, 4)  # Slots de construção em azul escuro
 
         pygame.draw.rect(surface, (30, 30, 30), rect, 1)  # Grade
+
+    def get_enemy_types(self):
+        return [BeeEnemy, SlimeEnemy,WolfEnemy]

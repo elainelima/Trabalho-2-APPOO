@@ -22,17 +22,21 @@ class GameMapBase(ABC):
     def update(self):
         pass
 
-    def draw(self, surface):
+    def draw(self, surface: pygame.surface.Surface):
         for row in range(MAP_ROWS):
             for col in range(MAP_COLS):
                 rect = pygame.Rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 self.draw_tile(surface, rect, row, col)
 
     @abstractmethod
-    def draw_tile(self, surface, rect, row, col):
+    def draw_tile(self, surface: pygame.surface.Surface, rect: pygame.Rect, row: int, col: int):
         pass
 
-    def is_buildable(self, tile_pos):
+    @abstractmethod
+    def get_enemy_types(self):
+        pass
+
+    def is_buildable(self, tile_pos: tuple):
         row, col = tile_pos
         if row < 0 or col < 0 or row >= MAP_ROWS or col >= MAP_COLS:
             return False

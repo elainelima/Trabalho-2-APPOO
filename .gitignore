@@ -24,3 +24,4 @@ Thumbs.db
 # Logs e arquivos de cache
 *.log
 *.cache
+virtualEnvironment/
